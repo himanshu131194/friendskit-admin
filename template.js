@@ -2,59 +2,69 @@ export default () => {
     return `<!DOCTYPE html>
         <html>
         <head>
-            <!-- Required meta tags -->
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-            <title> Friendkit | Feed</title>
-            <link rel="icon" type="image/png" href="assets/images/favicon.png" />
-            <!-- Fonts -->
-            <link href="https://fonts.googleapis.com/css?family=Montserrat:600,700,800,900" rel="stylesheet">
-            <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet">
-            <link href="https://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/css/materialdesignicons.min.css" rel="stylesheet">
-            <link href="https://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/css/webfont.css" rel="stylesheet">
-            <!-- Core CSS -->
-            <link rel="stylesheet" href="/css/bulma.css">
-            <link rel="stylesheet" href="/css/app.css">
-            
-        </head>
+        <meta name="description" content="Premium Quality and Responsive UI for Dashboard.">
+        <meta name="author" content="ThemePixels">
+    
+        <title>Bracket Responsive Bootstrap 4 Admin Template</title>
+    
+        <!-- vendor css -->
+        <link href="/lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+        <link href="/lib/Ionicons/css/ionicons.css" rel="stylesheet">
+        <link href="/lib/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet">
+        <link href="/lib/jquery-switchbutton/jquery.switchButton.css" rel="stylesheet">
+        <link href="/lib/rickshaw/rickshaw.min.css" rel="stylesheet">
+        <link href="/lib/chartist/chartist.css" rel="stylesheet">
+    
+        <!-- Bracket CSS -->
+        <link rel="stylesheet" href="/css/bracket.css">
+      </head>
         <body>
-                <!-- Pageloader -->
-                <div class="pageloader"></div>
-                <div class="infraloader is-active"></div>
-                <div class="app-overlay"></div>
-               
                 <div id="root"></div>
                 <script type="text/javascript" src="/dist/bundle.js"></script>
-
-
-
-
-
-
-                <!-- Concatenated js plugins and jQuery -->
-                <script src="https://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/app.js"></script>
                 
-                <!-- Core js -->
-                <script src="https://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/data/tipuedrop_content.js"></script>
-                <script src="https://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/global.js"></script>
-                <script src="https://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/main.js"></script>
                 
-                <!-- Page and UI related js -->
-                <script src="https://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/feed.js"></script>
-      
-                
-                <!-- Components js -->
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/widgets.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/autocompletes.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/modal-uploader.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/popovers-users.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/popovers-pages.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/go-live.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/lightbox.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/touch.js"></script>
-                <script src="httpss://feel-funny.s3.ap-south-1.amazonaws.com/friendskit/assets/js/tour.js"></script>   
+        <script src="/lib/jquery/jquery.js"></script>
+        <script src="/lib/popper.js/popper.js"></script>
+        <script src="/lib/bootstrap/bootstrap.js"></script>
+        <script src="/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
+        <script src="/lib/moment/moment.js"></script>
+        <script src="/lib/jquery-ui/jquery-ui.js"></script>
+        <script src="/lib/jquery-switchbutton/jquery.switchButton.js"></script>
+        <script src="/lib/peity/jquery.peity.js"></script>
+        <script src="/lib/highlightjs/highlight.pack.js"></script>
+        <script src="/lib/select2/js/select2.min.js"></script>
+    
+        <script src="/js/bracket.js"></script>
+        <script>
+            $(function(){
+            'use strict'
+    
+            $('.form-layout .form-control').on('focusin', function(){
+                $(this).closest('.form-group').addClass('form-group-active');
+            });
+    
+            $('.form-layout .form-control').on('focusout', function(){
+                $(this).closest('.form-group').removeClass('form-group-active');
+            });
+    
+            // Select2
+            $('#select2-a, #select2-b').select2({
+                minimumResultsForSearch: Infinity
+            });
+    
+            $('#select2-a').on('select2:opening', function (e) {
+                $(this).closest('.form-group').addClass('form-group-active');
+            });
+    
+            $('#select2-a').on('select2:closing', function (e) {
+                $(this).closest('.form-group').removeClass('form-group-active');
+            });
+    
+            });
+        </script>
         </body> 
     </html>`  
 }
