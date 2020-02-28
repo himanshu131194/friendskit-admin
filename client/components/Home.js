@@ -11,7 +11,6 @@ class Home extends PureComponent{
       render(){
       	 return(
                   <Fragment>
-                        <Header/>
                         <Leftsidebar/>
                         <Sections/>
                   </Fragment>

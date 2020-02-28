@@ -1979,7 +1979,7 @@ textarea.custom-file-input.parsley-error:focus {
 }
 .btn:focus, .sp-container button:focus, .btn.focus, .sp-container button.focus {
   outline: 0;
-  box-shadow: 0 0 0 3px rgba(8, 102, 198, 0.25);
+  /* box-shadow: 0 0 0 3px rgba(8, 102, 198, 0.25); */
 }
 .btn.disabled, .sp-container button.disabled, .btn:disabled, .sp-container button:disabled {
   opacity: .65;
@@ -2004,7 +2004,7 @@ fieldset[disabled] a.btn {
   border-color: #064d95;
 }
 .btn-primary:focus, .btn-primary.focus {
-  box-shadow: 0 0 0 3px rgba(8, 102, 198, 0.5);
+  /* box-shadow: 0 0 0 3px rgba(8, 102, 198, 0.5); */
 }
 .btn-primary.disabled, .btn-primary:disabled {
   background-color: #0866C6;
@@ -2050,7 +2050,7 @@ fieldset[disabled] a.btn {
   border-color: #1a8e06;
 }
 .btn-success:focus, .btn-success.focus {
-  box-shadow: 0 0 0 3px rgba(35, 191, 8, 0.5);
+  /* box-shadow: 0 0 0 3px rgba(35, 191, 8, 0.5); */
 }
 .btn-success.disabled, .btn-success:disabled {
   background-color: #23BF08;
@@ -2119,7 +2119,7 @@ fieldset[disabled] a.btn {
   border-color: #bd2130;
 }
 .btn-danger:focus, .btn-danger.focus {
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.5);
+  /* box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.5); */
 }
 .btn-danger.disabled, .btn-danger:disabled {
   background-color: #dc3545;
@@ -2189,7 +2189,7 @@ fieldset[disabled] a.btn {
   border-color: #0866C6;
 }
 .btn-outline-primary:focus, .btn-outline-primary.focus {
-  box-shadow: 0 0 0 3px rgba(8, 102, 198, 0.5);
+  /* box-shadow: 0 0 0 3px rgba(8, 102, 198, 0.5); */
 }
 .btn-outline-primary.disabled, .btn-outline-primary:disabled {
   color: #0866C6;
@@ -2237,7 +2237,7 @@ fieldset[disabled] a.btn {
   border-color: #23BF08;
 }
 .btn-outline-success:focus, .btn-outline-success.focus {
-  box-shadow: 0 0 0 3px rgba(35, 191, 8, 0.5);
+  /* box-shadow: 0 0 0 3px rgba(35, 191, 8, 0.5); */
 }
 .btn-outline-success.disabled, .btn-outline-success:disabled {
   color: #23BF08;
@@ -58738,3 +58738,19 @@ a.hover-white-8:hover, a.hover-white-8:focus {
 .mx-wd-1350 {
   max-width: 1350px;
 }
+
+.is-disabled{
+  pointer-events:none;
+  opacity:0.4;
+  cursor:default !important
+}
+
+
+
+
+/* CUSTOM CSS */
+/* The switch - the box around the slider */
+.width-500-min{
+   min-width: 500px;
+}
+/*  */

@@ -85,6 +85,22 @@ export const uploadAll = ({uploadedURL, postSlug, postTitle , postSections, post
     }
 }
 
+export const listDocuments= ()=>{
+    return async (dispatch)=>{
+           let err = null, result = null;
+           try{
+               let {data} = await axios.get(`${CONFIG.API_URL}/api/list-documents`);
+                    result = data.data;
+           }catch(e){
+               err = e.response.data.error;
+           }
+           dispatch({
+               type: LIST_SECTIONS,
+               payload: result
+           })
+    }
+}
+
 export const listSections = ()=>{
     return async (dispatch)=>{
            let err = null, result = null;
@@ -169,11 +185,11 @@ export const setPostId = (post_id)=>{
     }
 }
 
-export const deleteComment = (post_id, comment_id, cb)=>{
+export const addSection = (section_details, cb)=>{
     return async ()=>{
         let result = null;
             try{
-                let {data} = await axios.post(`${CONFIG.API_URL}/api/delete-comments`, {comment_id, post_id});
+                let {data} = await axios.post(`${CONFIG.API_URL}/api/add-sections`, section_details);
                 result = data['data'];
                 cb(null, result)
             }catch(e){
@@ -182,18 +198,21 @@ export const deleteComment = (post_id, comment_id, cb)=>{
     }
 }
 
-export const downloadContent = (content_url, post_id, cb)=>{
+
+export const toggleContent = ({type, id, action}, cb)=>{
+    action = action > 0? true: false; 
     return async ()=>{
+        let result = null;
             try{
-                let {data} = await axios.get(`${CONFIG.API_URL}/api/download-content?content_url=${content_url}&post_id=${post_id}`, {
-                    responseType: 'arraybuffer'	
-                });
-                cb(null, data)
+                let {data} = await axios.post(`${CONFIG.API_URL}/api/toggle-contents`, {type, id, action});
+                result = data['data'];
+                cb(null, result)
             }catch(e){
                 cb(e, null)
             }
     }
 }
+
 
 
 

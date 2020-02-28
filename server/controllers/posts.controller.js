@@ -1,4 +1,5 @@
 import postSections from '../models/sections.model'
+import Documents from '../models/documents.model'
 import Posts from '../models/posts.model'
 import likedPosts from '../models/liked_posts.model'
 import Comments from '../models/comments.model'
@@ -22,6 +23,20 @@ export default {
            const sections = await postSections.find({});
            res.status(200).send({
                data : sections  
+           })
+        }catch(e){
+           res.status(400).send({
+               error : CONFIG.ERRORS[100]
+           })
+         }
+    },
+
+
+    listUniversalUploads : async (req, res)=>{
+        try{
+           const documents = await Documents.find({});
+           res.status(200).send({
+               data : documents  
            })
         }catch(e){
            res.status(400).send({
@@ -69,7 +84,17 @@ export default {
                  ext
              });
 
-             return res.status(200).send({
+            const documentsObj = new Documents({
+                url : `https://${CONFIG.S3.BUCKET}.s3.ap-south-1.amazonaws.com/${key}`,
+                key: key,
+                slug: slugId,
+                mime: type,
+                ext
+            });
+
+            await documentsObj.save();
+
+           return res.status(200).send({
                  url : `https://${CONFIG.S3.BUCKET}.s3.ap-south-1.amazonaws.com/${key}`,
                  key: key,
                  slug: slugId,
@@ -388,26 +413,49 @@ export default {
 
 
 
-    downloadContent : async (req, res)=>{
-        let {content_url, post_id} =  req.query;
-        try{
-            let content = await rp({
-                uri: content_url,
-                encoding: null
-            });
-            const updatePosts = await Posts.findOneAndUpdate(
-                { _id: mongoose.Types.ObjectId(post_id) },
-                { $inc : { download_count: 1 } },
-                { new: true}
-            );
-            res.status(200).send(content)
-         }catch(e){
-             console.log(e);
+    addSections : async (req, res)=>{
+         console.log(req.body);
+         const sectionId = req.body.section_id ? req.body.section_id: null;
+         const is_active = req.body.disabled ? req.body.disabled : true;
+         const { section_name, section_logo, section_description } = req.body;
+         try {
+            const result = await postSections.findOneAndUpdate({
+              _id: mongoose.Types.ObjectId(sectionId),                 
+            }, 
+            { value: section_name,
+              url: section_logo, 
+              description: section_description,
+              is_active
+            },
+            { upsert: true });
+
+            res.status(200).send({
+                data : result  
+            })
+         } catch (e) {
             res.status(400).send({
-                error : e   
+                error : e
             })
          }
-    }
+    },
+
+    toggleContents: async (req, res)=>{
+        console.log(req.body);
+        const {type, id, action} = req.body;
+        try {
+           const result = await postSections.findOneAndUpdate({
+             _id: mongoose.Types.ObjectId(id),                 
+           }, 
+           { is_active: action });
+           res.status(200).send({
+               data : result  
+           })
+        } catch (e) {
+           res.status(400).send({
+               error : e
+           })
+        }
+   }
 
 }
 
