@@ -21,23 +21,17 @@ class Uploader extends Component{
         if(contentURL.length>0 && this.validateUplaodURL(contentURL)){
             this.setState({loading: 1});
             this.props.uploadS3({url: contentURL, mime:null, ext: null, data64:null}, (err, res)=>{
-                console.log(res);
-                if(!err){
-                      this.uploadedFileObj.postMime = res.mime;
-                      this.uploadedFileObj.postExt = res.ext;
-                      this.uploadedFileObj.postSlug = res.slug;
-                      this.uploadedFileObj.uploadedURL = res.url;
-                    //   this.props.onUploadComplete(this.uploadedFileObj, res.base64);
+                if(err){
+                     this.externalUrlInput.current.classList.add('text-error');
                 }else{
-                      this.externalUrlInput.current.classList.add('text-error');
+                    this.setState({loading: 0});
+                    this.props.listDocuments();
                 }
-                this.setState({loading: 0});
-              })
-             console.log(contentURL);
-         }else{
+            })
+        }else{
             this.externalUrlInput.current.classList.add('text-error');
-         }
-
+        }
+        this.externalUrlInput.current.value = '';
     }
 
 
@@ -55,12 +49,12 @@ class Uploader extends Component{
 
                                     <div className="col-lg-9">
                                         <div className="form-group">
-                                            <input className="form-control" ref={this.externalUrlInput} type="text" name="firstname" placeholder="url" />
+                                            <input className="form-control" ref={this.externalUrlInput} type="text" placeholder="paste url for picture/video" />
                                         </div>
                                     </div>
                                     <div className="col-lg-3">
                                         <div className="form-group">
-                                            <button onClick={this.onTypeImageURL}  class={this.state.loading==0? "btn btn-primary btn-block uppercase mg-b-10": "btn btn-primary btn-block uppercase mg-b-10 is-disabled"}>generate url</button>
+                                            <button onClick={this.onTypeImageURL}  className={this.state.loading==0? "btn btn-primary btn-block uppercase mg-b-10": "btn btn-primary btn-block uppercase mg-b-10 is-disabled"}>generate url</button>
                                         </div>
                                     </div>
                                 </div>

@@ -7,22 +7,22 @@ class Leftsidebar extends Component{
                     <div className="br-sideleft overflow-y-auto ps ps--theme_default ps--active-y" data-ps-id="d9e6d6e4-a07c-d13b-0851-8f86fec2b4bd">
                         <label className="sidebar-label pd-x-15 mg-t-20">Navigation</label>
                         <div className="br-sideleft-menu">
-                            <a href="index.html" className="br-menu-link">
+                            <a href="/" className="br-menu-link">
                                 <div className="br-menu-item">
                                     <i className="menu-item-icon icon ion-ios-home-outline tx-22"></i>
-                                    <span className="menu-item-label">Dashboard</span>
+                                    <span className="menu-item-label">Add Sections</span>
                                 </div>
                             </a>
-                            <a href="mailbox.html" className="br-menu-link">
+                            <a href="/uploader" className="br-menu-link">
                                 <div className="br-menu-item">
                                     <i className="menu-item-icon icon ion-ios-email-outline tx-24"></i>
-                                    <span className="menu-item-label">Mailbox</span>
+                                    <span className="menu-item-label">Universal Uploader</span>
                                 </div>
                             </a>
-                            <a href="card-dashboard.html" className="br-menu-link">
+                            <a href="/tags" className="br-menu-link">
                                 <div className="br-menu-item">
                                     <i className="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                                    <span className="menu-item-label">Cards &amp; Widgets</span>
+                                    <span className="menu-item-label">Add Tags</span>
                                 </div>
                             </a>
                             <a href="#" className="br-menu-link">

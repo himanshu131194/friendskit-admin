@@ -1,4 +1,4 @@
-import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, CURRENT_POST, COMMENTS_LIST} from '../actions/types'
+import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, LIST_TAGS, LIST_DOCUMENTS, CURRENT_POST, COMMENTS_LIST} from '../actions/types'
 
 export const listOfPostsReducer = (state=null, action)=>{
 	switch(action.type){
@@ -43,6 +43,24 @@ export const authUsersReducer = (state=null, action)=>{
 export const listOfSectionsReducer = (state=[], action)=>{
 	switch(action.type){
 		  case LIST_SECTIONS:
+			return action.payload;
+		  default: 
+		   return state;
+	}
+} 
+
+export const listOfTagsReducer = (state=[], action)=>{
+	switch(action.type){
+		  case LIST_TAGS:
+			return action.payload;
+		  default: 
+		   return state;
+	}
+} 
+
+export const listOfDocumentsReducer = (state=[], action)=>{
+	switch(action.type){
+		  case LIST_DOCUMENTS:
 			return action.payload;
 		  default: 
 		   return state;

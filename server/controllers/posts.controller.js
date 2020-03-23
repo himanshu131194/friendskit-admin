@@ -1,4 +1,5 @@
 import postSections from '../models/sections.model'
+import postTags from '../models/tags.model'
 import Documents from '../models/documents.model'
 import Posts from '../models/posts.model'
 import likedPosts from '../models/liked_posts.model'
@@ -9,6 +10,7 @@ import CONFIG from '../../config';
 import uuid from 'uuid/v4';
 import AWS from 'aws-sdk'
 import rp from 'request-promise'
+import moment from 'moment'
 
 const s3 = new AWS.S3({
     accessKeyId: CONFIG.S3.ACCESS,
@@ -31,10 +33,22 @@ export default {
          }
     },
 
+    listTags : async (req, res)=>{
+        try{
+           const sections = await postTags.find({});
+           res.status(200).send({
+               data : sections  
+           })
+        }catch(e){
+           res.status(400).send({
+               error : CONFIG.ERRORS[100]
+           })
+         }
+    },
 
     listUniversalUploads : async (req, res)=>{
         try{
-           const documents = await Documents.find({});
+           const documents = await Documents.find({}).sort({created: -1});
            res.status(200).send({
                data : documents  
            })
@@ -62,11 +76,14 @@ export default {
                          console.log(ext)
              }
 
+
+
+
              ext = listOfSupportedExtns.indexOf(ext)<0 ? 'jpg': ext;
              const slugId = uuid();
              const base64Data = result;
              const type = `image/${ext}`;
-             const key = `posts/${slugId}.${ext}`;
+             const key = `uploads/${moment().format('DD-MM-YYYY')}/${slugId}.${ext}`;
              const params = {
                    Bucket: CONFIG.S3.BUCKET,
                    Key: key,
@@ -410,9 +427,6 @@ export default {
           }
     },
 
-
-
-
     addSections : async (req, res)=>{
          console.log(req.body);
          const sectionId = req.body.section_id ? req.body.section_id: null;
@@ -439,14 +453,47 @@ export default {
          }
     },
 
+    addTags : async (req, res)=>{
+        console.log(req.body);
+        const tagId = req.body.tag_id ? req.body.tag_id: null;
+        const is_active = req.body.disabled ? req.body.disabled : true;
+        const { tag_name } = req.body;
+        try {
+        const result = await postTags.findOneAndUpdate({
+            _id: mongoose.Types.ObjectId(tagId),                 
+        }, 
+        {   name: tag_name,
+            is_active
+        },
+        { upsert: true });
+
+        res.status(200).send({
+            data : result  
+        })
+        } catch (e) {
+        res.status(400).send({
+            error : e
+        })
+        }
+    },
+
     toggleContents: async (req, res)=>{
         console.log(req.body);
         const {type, id, action} = req.body;
+        let result = null;
         try {
-           const result = await postSections.findOneAndUpdate({
-             _id: mongoose.Types.ObjectId(id),                 
-           }, 
-           { is_active: action });
+           if(type==='sections'){
+              result = await postSections.findOneAndUpdate({
+                _id: mongoose.Types.ObjectId(id),                 
+              }, 
+              { is_active: action });
+           }else if(type==='tags'){
+              result = await postTags.findOneAndUpdate({
+                _id: mongoose.Types.ObjectId(id),                 
+              }, 
+              { is_active: action });
+           }
+
            res.status(200).send({
                data : result  
            })

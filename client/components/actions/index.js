@@ -1,4 +1,4 @@
-import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, CURRENT_POST, COMMENTS_LIST, COMMENT_UPVOTE} from './types'
+import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, LIST_TAGS, LIST_DOCUMENTS, CURRENT_POST, COMMENTS_LIST, COMMENT_UPVOTE} from './types'
 import CONFIG from '../../../config'
 import axios from 'axios'
 
@@ -95,23 +95,7 @@ export const listDocuments= ()=>{
                err = e.response.data.error;
            }
            dispatch({
-               type: LIST_SECTIONS,
-               payload: result
-           })
-    }
-}
-
-export const listSections = ()=>{
-    return async (dispatch)=>{
-           let err = null, result = null;
-           try{
-               let {data} = await axios.get(`${CONFIG.API_URL}/api/list-sections`);
-                    result = data.data;
-           }catch(e){
-               err = e.response.data.error;
-           }
-           dispatch({
-               type: LIST_SECTIONS,
+               type: LIST_DOCUMENTS,
                payload: result
            })
     }
@@ -199,7 +183,53 @@ export const addSection = (section_details, cb)=>{
 }
 
 
+export const listSections = ()=>{
+    return async (dispatch)=>{
+           let err = null, result = null;
+           try{
+               let {data} = await axios.get(`${CONFIG.API_URL}/api/list-sections`);
+                    result = data.data;
+           }catch(e){
+               err = e.response.data.error;
+           }
+           dispatch({
+               type: LIST_SECTIONS,
+               payload: result
+           })
+    }
+}
+
+export const addTag = (tag_details, cb)=>{
+    return async ()=>{
+        let result = null;
+            try{
+                let {data} = await axios.post(`${CONFIG.API_URL}/api/add-tags`, tag_details);
+                result = data['data'];
+                cb(null, result)
+            }catch(e){
+                cb(e, null)
+            }
+    }
+}
+
+export const listTags = ()=>{
+    return async (dispatch)=>{
+           let err = null, result = null;
+           try{
+               let {data} = await axios.get(`${CONFIG.API_URL}/api/list-tags`);
+                    result = data.data;
+           }catch(e){
+               err = e.response.data.error;
+           }
+           dispatch({
+               type: LIST_TAGS,
+               payload: result
+           })
+    }
+}
+
 export const toggleContent = ({type, id, action}, cb)=>{
+    console.log('data');
     action = action > 0? true: false; 
     return async ()=>{
         let result = null;

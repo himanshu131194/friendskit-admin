@@ -7,6 +7,8 @@ import Leftsidebar from './components/collection/Partials/Leftsidebar';
 import Home from './components/Home'
 
 import UniversalUpload from './components/collection/UniversalUpload';
+import AddTags from './components/collection/AddTags';
+
 
 
 
@@ -19,6 +21,7 @@ class MainRouter extends Component{
                <Switch>
                	    <Route exact path="/" component={Home}/>
 					<Route path="/uploader" component={UniversalUpload}/>
+					<Route path="/tags" component={AddTags}/>
                </Switch>
              </Fragment>
 	  	  )

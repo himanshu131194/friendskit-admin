@@ -4,6 +4,8 @@ import usersController from '../controllers/users.controller'
 export default (router)=>{
     
     router.get('/list-sections', postsController.listSections);
+    router.get('/list-tags', postsController.listTags);
+
     
     router.get('/list-documents', postsController.listUniversalUploads);
 
@@ -35,6 +37,9 @@ export default (router)=>{
     // router.post('/post-comments', usersController.authenticate, postsController.postComments)
 
     router.post('/add-sections', postsController.addSections)
+
+    router.post('/add-tags', postsController.addTags)
+
     router.post('/toggle-contents', postsController.toggleContents)
        
     return router;
