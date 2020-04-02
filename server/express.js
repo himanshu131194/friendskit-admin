@@ -7,6 +7,8 @@ import Template from './../template.js'
 
 import usersRoutes from './routes/users.routes'
 import postsRoutes from './routes/posts.routes'
+import crawlersRoutes from './routes/crawlers.routes'
+
 
 import cors from 'cors'
 import cookieSession from 'cookie-session'
@@ -45,6 +47,8 @@ app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 
 app.use('/api', usersRoutes(express.Router()));
 app.use('/api', postsRoutes(express.Router()));
+app.use('/api', crawlersRoutes(express.Router()));
+
 
 
 app.get('*', (req, res)=>{

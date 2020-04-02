@@ -182,6 +182,19 @@ export const addSection = (section_details, cb)=>{
     }
 }
 
+export const addSource= (source_details, cb)=>{
+    return async ()=>{
+        let result = null;
+            try{
+                let {data} = await axios.post(`${CONFIG.API_URL}/api/upload-crawled-urls`, source_details);
+                result = data['data'];
+                cb(null, result)
+            }catch(e){
+                cb(e, null)
+            }
+    }
+}
+
 
 export const listSections = ()=>{
     return async (dispatch)=>{

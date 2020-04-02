@@ -1,10 +1,11 @@
 export default {
    env : process.env.NODE_ENV || 'development',
    port : process.env.PORT || 8000,
-   // API_URL: "http://localhost:8000",
-   API_URL: "http://192.168.0.132:8000",
+   API_URL: "http://localhost:8000",
+   // API_URL: "http://192.168.0.132:8000",
    // API_URL: "http://192.168.43.140:8000",
-   MONGO_URI : 'mongodb+srv://feelfunny:feelfunny123@feelfunny-jfu4v.mongodb.net/test?retryWrites=true',
+   MONGO_URI: 'mongodb+srv://feelfunny:feelfunny123@cluster0-ekrsc.mongodb.net/test?retryWrites=true&w=majority',
+   // MONGO_URI : 'mongodb+srv://feelfunny:feelfunny123@feelfunny-jfu4v.mongodb.net/test?retryWrites=true',
    COOKIEKEY: 'mycookiesecret',
    DB:{
       DEFAULT_COUNT : 0,
