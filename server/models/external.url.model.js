@@ -9,6 +9,15 @@ const externalUrls = new mongoose.Schema({
       s3_url:{
           type: String
       },
+      slug_id : {
+          type: String
+      },
+      mime_type: {
+        type: String
+      },
+      ext: {
+        type: String
+      },
       post_uploaded:{
         type: Boolean, 
         default: DB.DEFAULT_FALSE
