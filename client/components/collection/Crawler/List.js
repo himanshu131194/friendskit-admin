@@ -2,29 +2,9 @@ import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux';
 import * as actions from '../../actions';
 
-import EditSections from '../Models/EditSections';
-
 class List extends Component{
-     state = {
-         sectionId: null
-     }
       componentDidMount(){
-          this.props.listSections();
-      }
-      toggleSection = (e)=>{
-           e.preventDefault();
-           const currentEle = e.target;
-           currentEle.classList.add('is-disabled');
-           const { id, action } = currentEle.dataset;
-           this.props.toggleContent({type: 'sections', id, action}, (err, result)=>{
-              currentEle.classList.remove('is-disabled');
-              this.props.listSections();
-           });  
-      }
-
-      onEdit = (e)=>{
-          e.preventDefault();
-          this.setState({ sectionId: e.target.dataset.id });
+          this.props.listCrawledSources();
       }
       render(){
       	return(
@@ -34,30 +14,22 @@ class List extends Component{
                     <thead>
                         <tr>
                         <th>ID</th>
-                        <th>Key</th>
-                        <th>Name</th>
-                        <th>Url</th>
-                        <th>Description</th>
-                        <th>Actions</th>
+                        <th>Source</th>
+                        <th>Yes count</th>
+                        <th>No count</th>
+                        <th>Total Count</th>
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            this.props.listOfSections.length>0 && this.props.listOfSections.map((section, index)=>{
+                            this.props.listOfCrawledSources.length>0 && this.props.listOfCrawledSources.map((source, index)=>{
                                 return(
-                                    <tr key={section._id}>
+                                    <tr key={source._id}>
                                         <th scope="row">{index+1}</th>
-                                        <td>{section._id}</td>
-                                        <td>{section.value}</td>
-                                        <td><a href={section.url} target="_blank">Goto Logo</a></td>
-                                        <td>{section.description}</td>
-                                        <td className="custom-switch">
-                                        <button onClick={this.onEdit} data-toggle="modal" data-target="#modaldemo1" data-id={section._id} className={section.is_active? "btn tx-uppercase btn-primary" : "btn tx-uppercase btn-primary is-disabled"}>edit section</button>
-                                        {section.is_active 
-                                          ? <button data-id={section._id} data-action="0" onClick={this.toggleSection} className="btn tx-uppercase btn-danger mg-l-10">disable</button>
-                                          : <button data-id={section._id} data-action="1" onClick={this.toggleSection} className="btn tx-uppercase btn-success mg-l-10">active</button>
-                                        }
-                                        </td>
+                                        <th>{source._id}</th>
+                                        <td>{source.yesCount}</td>
+                                        <td>{source.noCount}</td>
+                                        <td>{source.totalCount}</td>
                                 </tr>
                                 )
                             })
@@ -65,8 +37,6 @@ class List extends Component{
                     </tbody>
                     </table>
                 </div>
-                
-                <EditSections  onSectonEdit={this.state.sectionId}/>
           </Fragment>
         )
       }
@@ -74,9 +44,6 @@ class List extends Component{
 
 
 export default connect(state=>state, actions)(List);
-
-
-
 
 
 

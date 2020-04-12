@@ -38,7 +38,6 @@ class Header extends Component{
       }
       
       addNewPosts = async (e)=>{
-          console.log(e.target);
           const currentEle = e.target;
           currentEle.classList.add('is-disabled');
           const sourceName = this.source_name.current.value;
@@ -52,16 +51,13 @@ class Header extends Component{
             ++this.counter;
             this.post_counter.current.innerHTML = this.counter;
             if(this.keepPosting){
-                //currentEle.click();
-                console.log(posted);
+                currentEle.click();
                 console.log('posted');
             }else{
-                console.log('stopped')
+                console.log('stopped');
+                this.keepPosting= true;
+                currentEle.classList.remove('is-disabled');
             }
-            //  setInterval(()=>{
-            //     currentEle.click();
-            //     ++this.counter;
-            //  }, 300000);
           }
       }
 

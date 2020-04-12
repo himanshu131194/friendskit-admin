@@ -49,6 +49,15 @@ export const listOfSectionsReducer = (state=[], action)=>{
 	}
 } 
 
+export const listOfCrawledSourcesReducer = (state=[], action)=>{
+	switch(action.type){
+		  case LIST_SECTIONS:
+			return action.payload;
+		  default: 
+		   return state;
+	}
+} 
+
 export const listOfTagsReducer = (state=[], action)=>{
 	switch(action.type){
 		  case LIST_TAGS:

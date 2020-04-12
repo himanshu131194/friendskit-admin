@@ -84,7 +84,7 @@ export default {
     storeAllCrawledUrls : async (req ,res)=>{
         console.log(req.body);
         const next_cursor = req.body.next_cursor ? req.body.next_cursor.trim(): null;
-        const { source_urls, source_name } = req.body;
+        const { source_urls, source_name, crawled_source } = req.body;
         //CHECK URL IS ALREADY IN DB 
         const urlsArray = source_urls;
         const is_present = false;
@@ -101,6 +101,7 @@ export default {
                     slug_id: s3Result.slug_id,
                     mime_type: s3Result.mime,
                     ext: s3Result.ext,
+                    crawled_source,
                     source: source_name.toLowerCase().trim(),
                     next_cursor
                 });
@@ -149,7 +150,19 @@ export default {
                {
                 $group: {
                     _id : "$source" ,
-                    count: { $sum : 1}
+                    'yesCount': {
+                        "$sum": {
+                            "$cond": [ "$post_uploaded", 1, 0 ]
+                        }
+                    },
+                    'noCount': {
+                        "$sum": {
+                            "$cond": [ "$post_uploaded", 0, 1 ]
+                        }
+                    },
+                    'totalCount': {
+                             $sum : 1
+                    }
                 }
                }
            ]);
@@ -166,8 +179,8 @@ export default {
     listUploadedPosts : async (req, res)=>{
           //Count total posts 
         //  const result = await externalUrls.updateMany({
-        //     source: '9gag_girl'
-        // }, {post_uploaded: false});
+        //     source: 'buzzfeedcomics'
+        // }, {crawled_source: 1});
         //   const result = await Posts.deleteMany({
         //         crawled: true
         //   });
@@ -323,6 +336,7 @@ export default {
         return res.status(200).send({
                source_name : `9gag_${section_name.trim()}`,
                source_urls : finalArray,
+               crawled_source: 2,
                next_cursor: nextCursor
         })
     }

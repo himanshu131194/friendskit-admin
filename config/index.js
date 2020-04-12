@@ -21,6 +21,11 @@ export default {
       BADGETS: {
          NOOBIE: 1,
          PRO: 2 
+      },
+      CRAWLED_TYPE : {
+          DEFAULT : 0,
+          FB : 1,
+          GAG: 2
       }
    },
    S3:{

@@ -25,9 +25,12 @@ const externalUrls = new mongoose.Schema({
       source:{
         type: String
       },
+      crawled_source: {
+        type: Number,
+        default: DB.CRAWLED_TYPE.DEFAULT
+      },
       next_cursor:{
-        type: String,
-        default: null
+        type: String
       },
       created: {
       	 type: Date,
