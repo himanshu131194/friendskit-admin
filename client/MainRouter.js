@@ -9,9 +9,7 @@ import Home from './components/Home'
 import UniversalUpload from './components/collection/UniversalUpload';
 import AddTags from './components/collection/AddTags';
 import Crawler from './components/collection/Crawler'
-
-
-
+import NineGagCrawler from './components/collection/NineGagCrawler'
 
 class MainRouter extends Component{
 	  render(){
@@ -24,6 +22,8 @@ class MainRouter extends Component{
 					<Route path="/uploader" component={UniversalUpload}/>
 					<Route path="/tags" component={AddTags}/>
 					<Route path="/crawler" component={Crawler}/>
+					<Route path="/9gag-crawler" component={NineGagCrawler}/>
+
                </Switch>
              </Fragment>
 	  	  )

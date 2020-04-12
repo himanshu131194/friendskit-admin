@@ -25,6 +25,10 @@ const externalUrls = new mongoose.Schema({
       source:{
         type: String
       },
+      next_cursor:{
+        type: String,
+        default: null
+      },
       created: {
       	 type: Date,
       	 default: Date.now

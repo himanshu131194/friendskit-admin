@@ -5,6 +5,7 @@ export default (router)=>{
     router.post('/upload-crawled-urls', crawlersController.storeAllCrawledUrls);
     router.get('/list-crawled-pages', crawlersController.listCrawledPages);
     router.get('/post-crawled-urls', crawlersController.uploadPost);
+    router.post('/9gag-crawled-urls', crawlersController.nineGagCrawledUrls);
     router.get('/list-crawled-urls', crawlersController.listUploadedPosts);
 
 

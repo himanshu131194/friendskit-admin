@@ -259,6 +259,19 @@ export const toggleContent = ({type, id, action}, cb)=>{
 
 
 
+export const crawlNineGag = (section_details, cb)=>{
+    return async ()=>{
+        let result = null;
+            try{
+                let {data} = await axios.post(`${CONFIG.API_URL}/api/9gag-crawled-urls`, section_details);
+                result = data;
+                cb(null, result)
+            }catch(e){
+                cb(e, null)
+            }
+    }
+}
+
 
 
 

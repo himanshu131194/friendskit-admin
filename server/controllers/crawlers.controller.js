@@ -1,3 +1,6 @@
+import request from 'request'
+import rp from 'request-promise'
+
 import postSections from '../models/sections.model'
 import Documents from '../models/documents.model'
 import Posts from '../models/posts.model'
@@ -6,8 +9,8 @@ import mongoose from 'mongoose'
 import CONFIG from '../../config';
 import uuid from 'uuid/v4';
 import AWS from 'aws-sdk'
-import rp from 'request-promise'
 import moment from 'moment'
+import fetch from 'node-fetch';
 
 const s3 = new AWS.S3({
     accessKeyId: CONFIG.S3.ACCESS,
@@ -17,7 +20,7 @@ const s3 = new AWS.S3({
 
 const uploadToS3 = async (externalUrl, data64)=>{
     console.log('s3-upload');
-    console.log(externalUrl);
+    // console.log(externalUrl);
     try{
         let result = null, base64 = null, mime = null, ext = null;
         let listOfSupportedExtns = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
@@ -80,6 +83,7 @@ export default {
 
     storeAllCrawledUrls : async (req ,res)=>{
         console.log(req.body);
+        const next_cursor = req.body.next_cursor ? req.body.next_cursor.trim(): null;
         const { source_urls, source_name } = req.body;
         //CHECK URL IS ALREADY IN DB 
         const urlsArray = source_urls;
@@ -97,7 +101,8 @@ export default {
                     slug_id: s3Result.slug_id,
                     mime_type: s3Result.mime,
                     ext: s3Result.ext,
-                    source: source_name.toLowerCase().trim()
+                    source: source_name.toLowerCase().trim(),
+                    next_cursor
                 });
             }
         }
@@ -160,18 +165,24 @@ export default {
 
     listUploadedPosts : async (req, res)=>{
           //Count total posts 
-        //  const result = await externalUrls.updateMany({}, {post_uploaded: false});
+        //  const result = await externalUrls.updateMany({
+        //     source: '9gag_girl'
+        // }, {post_uploaded: false});
         //   const result = await Posts.deleteMany({
-        //       crawled: true
+        //         crawled: true
         //   });
+        //  const result = await externalUrls.deleteMany({
+        //       source: '9gag_girl'
+        //   }); 
           res.send({
                count: result
           })
     },
 
     uploadPost : async (req, res)=>{
-        
-        
+        const selectedToOnly = req.query && req.query.page ?  (req.query.page).trim(): null;
+
+        console.log(selectedToOnly);
         //GET ALL SECTIONS 
         const listOfSections = await postSections.find({});
         let sectionId = "5e7ea56943e92bf4f795db43"; //DEFAULT FUNNY
@@ -188,7 +199,7 @@ export default {
 
         //GET RANDON VALUE FROM LIST OF PAGES
         const randomIntFromInterval = (min, max) => (Math.floor(Math.random() * (max - min + 1) + min));
-        const selectedPage = listOfPages[randomIntFromInterval(0, listOfPages.length-1)]._id;
+        const selectedPage = selectedToOnly ? selectedToOnly : listOfPages[randomIntFromInterval(0, listOfPages.length-1)]._id;
 
         const getSectionId = (sectionName)=>{
               for(let x of listOfSections){
@@ -204,7 +215,11 @@ export default {
             sectionId = getSectionId('india');
         }else if(selectedPage.includes('comic') || selectedPage.includes('cartoon')){
             sectionId = getSectionId('comic');
+        }else if(selectedPage.includes('girl') || selectedPage.includes('girls')){
+            sectionId = getSectionId('girl');
         }
+
+        console.log(sectionId);
         
         //UPDATE PAGE AND GET ONE URL
         const getNewUrl = await externalUrls.findOne({
@@ -237,6 +252,7 @@ export default {
         });
 
         if(crawledSourceUrl){
+            console.log('alredy exits post');
             return res.status(200).send({
                 data : []
             })
@@ -265,17 +281,50 @@ export default {
             const result = await posts.save();
             return res.status(200).send({
                 data : result
-            })
+            });
+            console.log('post uploaded successfully');
         }catch(e){
             return res.status(400).send({
                 error : CONFIG.ERRORS[100]   
             })
         }
 
-
-
-
-
     },
 
+    nineGagCrawledUrls : async (req ,res)=>{
+        const { section_name, next_cursor } = req.body;
+        let cursor_url = null;
+        if(next_cursor){
+           //FIND THE LATEST NEXT CURSOR 
+           const result = await externalUrls.find({
+               source: '9gag_'+section_name.trim(),
+           }).sort({'created':-1});
+           console.log(result);
+           cursor_url = result ? result[0].next_cursor : null;
+        }
+        
+        let url =  cursor_url ? `${section_name}?${cursor_url}` : section_name;
+        const gagURL = `https://9gag.com/v1/group-posts/group/${url}`;
+        
+        const lsitOfdata = await fetch(gagURL);
+        const {data} = await lsitOfdata.json();
+
+        const {posts, nextCursor} = data;
+        const finalArray = [];
+
+        for(let post of posts){
+            if(post.type=="Photo"){
+               finalArray.push(post.images.image460.url);
+            }else{
+                continue;
+            }
+        }
+
+        return res.status(200).send({
+               source_name : `9gag_${section_name.trim()}`,
+               source_urls : finalArray,
+               next_cursor: nextCursor
+        })
+    }
+     
 }

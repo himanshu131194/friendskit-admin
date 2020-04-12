@@ -11,7 +11,9 @@ class Header extends Component{
       source_name= React.createRef();
       source_urls = React.createRef();
       post_counter = React.createRef();
+      postButton = React.createRef();
       counter = 0;
+      keepPosting = true;
       
       onAddSource = (e)=>{
           e.preventDefault();
@@ -29,17 +31,37 @@ class Header extends Component{
              });  
           }
       }
+
+      stopKeepPosting = ()=>{
+        this.keepPosting=false;
+        this.postButton.current.classList.remove('is-disabled');
+      }
       
       addNewPosts = async (e)=>{
           console.log(e.target);
           const currentEle = e.target;
-          const result = await axios.get(`${CONFIG.API_URL}/api/post-crawled-urls`);
+          currentEle.classList.add('is-disabled');
+          const sourceName = this.source_name.current.value;
+          
+          const baseUrl = `${CONFIG.API_URL}/api/post-crawled-urls`;
+
+          const url = sourceName!=='' ? `${baseUrl}?page=${sourceName}` : baseUrl;
+
+          const result = await axios.get(url);
           if(result){
+            ++this.counter;
             this.post_counter.current.innerHTML = this.counter;
-             setInterval(()=>{
-                currentEle.click();
-                ++this.counter;
-             }, 300000);
+            if(this.keepPosting){
+                //currentEle.click();
+                console.log(posted);
+                console.log('posted');
+            }else{
+                console.log('stopped')
+            }
+            //  setInterval(()=>{
+            //     currentEle.click();
+            //     ++this.counter;
+            //  }, 300000);
           }
       }
 
@@ -56,13 +78,22 @@ class Header extends Component{
                                 <div className="row">
                                 <div className="col-lg-3">
                                         <div className="form-group">
-                                            <button className="btn btn-primary btn-block uppercase mg-b-10" onClick={this.addNewPosts}>Uplaod New Posts</button>
-
+                                            <input className="form-control" ref={this.source_name} type="text" name="firstname" placeholder="Name" />
+                                        </div>
+                                </div>
+                                <div className="col-lg-1">
+                                     <h1 ref={this.post_counter}>0</h1>
+                                </div>
+                                <div className="col-lg-3">
+                                        <div className="form-group">
+                                            <button ref={this.postButton} className="btn btn-primary btn-block uppercase mg-b-10" onClick={this.addNewPosts}>Uplaod New Posts</button>
                                         </div>
                                 </div> 
-                                <div className="col-lg-3">
-                                     <h3 ref={this.post_counter}>0</h3>
-                                </div>
+                                <div className="col-lg-2">
+                                        <div className="form-group">
+                                            <button className="btn btn-danger btn-block uppercase mg-b-10" onClick={this.stopKeepPosting}>stop</button>
+                                        </div>
+                                </div> 
                                     {/* <div className="col-lg-4">
                                         <div className="form-group">
                                             <input className="form-control" ref={this.source_name} type="text" name="firstname" placeholder="Name" />
