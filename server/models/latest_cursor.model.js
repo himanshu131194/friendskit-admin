@@ -2,25 +2,9 @@ import mongoose from 'mongoose'
 import CONFIG from '../../config';
 const {DB} = CONFIG;
 
-const externalUrls = new mongoose.Schema({
+const latestCursor = new mongoose.Schema({
       url:{
         type: String
-      },
-      s3_url:{
-          type: String
-      },
-      slug_id : {
-          type: String
-      },
-      mime_type: {
-        type: String
-      },
-      ext: {
-        type: String
-      },
-      post_uploaded:{
-        type: Boolean, 
-        default: DB.DEFAULT_FALSE
       },
       source:{
         type: String
@@ -31,10 +15,6 @@ const externalUrls = new mongoose.Schema({
       },
       next_cursor:{
         type: String
-      },
-      section:{
-        type:mongoose.Schema.ObjectId,
-        ref: 'sections'
       },
       created: {
       	 type: Date,
@@ -48,4 +28,4 @@ const externalUrls = new mongoose.Schema({
       }
 })
 
-export default mongoose.model('external_urls', externalUrls);
+export default mongoose.model('latest_cursor', latestCursor);

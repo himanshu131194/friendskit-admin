@@ -292,4 +292,20 @@ export const crawlNineGag = (section_details, cb)=>{
 
 
 
+export const latestCursor = (section_details, cb)=>{
+    return async ()=>{
+        let result = null;
+            try{
+                let {data} = await axios.post(`${CONFIG.API_URL}/api/latest-cursor`, section_details);
+                console.log(data);
+                result = data.data;
+                cb(null, result)
+            }catch(e){
+                cb(e, null)
+            }
+    }
+}
+
+
+
 

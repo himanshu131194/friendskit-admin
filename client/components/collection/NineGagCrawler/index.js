@@ -2,13 +2,31 @@ import React, {Component, Fragment} from 'react'
 import {connect} from 'react-redux';
 import * as actions from '../../actions'
 import List from './List'
-
+import axios from 'axios'
 
 class AddTags extends Component{
 
       section_name = React.createRef();
       next_cursor = null;
       total_count =  React.createRef();
+      selected_section = React.createRef();
+
+      componentDidMount(){
+        this.props.listSections();
+      }
+
+      getLatestCursor = async (e)=>{
+          const currentEle = e.target;
+                currentEle.classList.add('is-disabled');
+          const section_name = this.section_name.current.value;
+          const response = await this.props.latestCursor({ crawled_source: 2, section_name }, (err, result)=>{
+                if(result){
+                    this.next_cursor = result.next_cursor;
+                    currentEle.classList.remove('is-disabled');
+                }
+                console.log(result.next_cursor);
+          });
+      }
       
       onSectionName = (e)=>{
           e.preventDefault();
@@ -17,9 +35,10 @@ class AddTags extends Component{
 
           currentEle.classList.add('is-disabled');
           const section_name = this.section_name.current.value;
+          const selected_section = this.selected_section.current.value;
 
           if(section_name!==''){
-             this.props.crawlNineGag({section_name, next_cursor: this.next_cursor}, (err, result)=>{
+             this.props.crawlNineGag({section_name, selected_section, next_cursor: this.next_cursor}, (err, result)=>{
                 console.log(err)
                 this.next_cursor = result.next_cursor;
                 if(result){
@@ -47,10 +66,20 @@ class AddTags extends Component{
 
                             <div className="form-layout">
                                 <div className="row">
-
-                                    <div className="col-lg-3">
+                                <div className="col-lg-3">
                                         <div className="form-group">
                                             <input className="form-control" ref={this.section_name} type="text" name="firstname" placeholder="Name" />
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-3">
+                                        <div className="form-group">
+                                            <select class="form-control" ref={this.selected_section}>
+                                            {
+                                                this.props.listOfSections.length>0 && this.props.listOfSections.map((section, index)=>{
+                                                    return <option value={section._id}>{section.value}</option>
+                                                })
+                                            }
+                                            </select>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
@@ -60,7 +89,7 @@ class AddTags extends Component{
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="form-group">
-                                            <button className="btn btn-primary btn-block uppercase mg-b-10" data-nextCursor='next_cursor' onClick={this.onSectionName}>Restore data</button>
+                                            <button className="btn btn-primary btn-block uppercase mg-b-10" data-nextCursor='next_cursor' onClick={this.getLatestCursor}>Restore data</button>
                                         </div>
                                     </div>
 

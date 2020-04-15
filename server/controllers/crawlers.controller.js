@@ -1,16 +1,25 @@
 import request from 'request'
 import rp from 'request-promise'
-
 import postSections from '../models/sections.model'
 import Documents from '../models/documents.model'
 import Posts from '../models/posts.model'
 import externalUrls from '../models/external.url.model'
+import latestCursor from '../models/latest_cursor.model'
 import mongoose from 'mongoose'
 import CONFIG from '../../config';
 import uuid from 'uuid/v4';
 import AWS from 'aws-sdk'
 import moment from 'moment'
 import fetch from 'node-fetch';
+import fs from 'fs';
+
+
+const imagemin = require('imagemin');
+const imageminJpegtran = require('imagemin-jpegtran');
+const imageminPngquant = require('imagemin-pngquant');
+const imageminMozjpeg = require('imagemin-mozjpeg');
+const imageminWebp = require('imagemin-webp');
+const imageminGiflossy = require('imagemin-giflossy');
 
 const s3 = new AWS.S3({
     accessKeyId: CONFIG.S3.ACCESS,
@@ -20,7 +29,6 @@ const s3 = new AWS.S3({
 
 const uploadToS3 = async (externalUrl, data64)=>{
     console.log('s3-upload');
-    // console.log(externalUrl);
     try{
         let result = null, base64 = null, mime = null, ext = null;
         let listOfSupportedExtns = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
@@ -33,8 +41,25 @@ const uploadToS3 = async (externalUrl, data64)=>{
                     ext = (externalUrl).split('.').pop();
                     base64 = `data:image/${ext};base64,`+buff.toString('base64');
         }
-        ext = listOfSupportedExtns.indexOf(ext)<0 ? 'jpg': ext;
         const slugId = uuid();
+        ext = listOfSupportedExtns.indexOf(ext)<0 ? 'jpg': ext;
+        //SAVE BUFFER AS PNG FORMAT 
+        fs.writeFileSync(`result_image/${slugId}.${ext}`, result);
+        //GET PNG FROM LOCAL AND COMPRESS AND RETURN COMPRESS BUFFF
+        const compressedContent = await imagemin([`result_image/${slugId}.{jpg,png,webp,gif}`], {
+            plugins: [
+                imageminMozjpeg({quality: 50}),
+                imageminPngquant({
+                    quality: [0.4, 0.5]
+                }),
+                imageminWebp({quality: 50}),
+                imageminGiflossy({lossy: 30})
+            ] 
+        });
+        result = compressedContent[0].data;
+        //DELETE PNG FROM LOCAL
+        fs.unlinkSync(`result_image/${slugId}.${ext}`);
+        //SAVE BUFFER IN S3 AND GET COMPRESS UPLOADED 
         const base64Data = result;
         const type = `image/${ext}`;
         const key = `uploads/${moment().format('DD-MM-YYYY')}/${slugId}.${ext}`;
@@ -50,7 +75,7 @@ const uploadToS3 = async (externalUrl, data64)=>{
             url : `https://${CONFIG.S3.BUCKET}.s3.ap-south-1.amazonaws.com/${key}`,
             key: key,
             slug: slugId,
-            base64, 
+            // base64, 
             mime: type,
             ext
         });
@@ -84,7 +109,7 @@ export default {
     storeAllCrawledUrls : async (req ,res)=>{
         console.log(req.body);
         const next_cursor = req.body.next_cursor ? req.body.next_cursor.trim(): null;
-        const { source_urls, source_name, crawled_source } = req.body;
+        const { source_urls, source_name, crawled_source, current_url, selected_section } = req.body;
         //CHECK URL IS ALREADY IN DB 
         const urlsArray = source_urls;
         const is_present = false;
@@ -103,8 +128,22 @@ export default {
                     ext: s3Result.ext,
                     crawled_source,
                     source: source_name.toLowerCase().trim(),
-                    next_cursor
+                    next_cursor,
+                    section: mongoose.Types.ObjectId(selected_section)
                 });
+                //UPATE THE LATEST CURSOR COLLECTION
+                let url = x.trim();
+                if(crawled_source===1){
+                   url = current_url;
+                }
+                console.log('crawled_source');
+                console.log(crawled_source);
+
+                await latestCursor.findOneAndUpdate({ 
+                    source: source_name.toLowerCase().trim()
+                }, 
+                { next_cursor, url, crawled_source},
+                { upsert: true });
             }
         }
         console.log(resultArray);
@@ -177,18 +216,29 @@ export default {
     },
 
     listUploadedPosts : async (req, res)=>{
-          //Count total posts 
-        //  const result = await externalUrls.updateMany({
-        //     source: 'buzzfeedcomics'
-        // }, {crawled_source: 1});
-        //   const result = await Posts.deleteMany({
-        //         crawled: true
-        //   });
-        //  const result = await externalUrls.deleteMany({
-        //       source: '9gag_girl'
-        //   }); 
+        //   //Count total posts 
+         await externalUrls.deleteMany({
+            
+        });
+
+        // const listOfPages = await externalUrls.aggregate([
+        //     {
+        //      $group: {
+        //          _id : "$source" ,
+        //          count: { $sum : 1},
+        //          section : { $first: '$section'}
+        //      }
+        //     }
+        // ]);
+          const result = await Posts.deleteMany({
+                crawled: true
+          });
+        //  const result = await latestCursor.find({
+              
+        //   }).sort({ created : -1}); 
+          await latestCursor.deleteMany({}); 
           res.send({
-               count: result
+            result
           })
     },
 
@@ -205,34 +255,40 @@ export default {
             {
              $group: {
                  _id : "$source" ,
-                 count: { $sum : 1}
+                 count: { $sum : 1},
+                 section : { $first: '$section'}
              }
             }
         ]);
 
         //GET RANDON VALUE FROM LIST OF PAGES
         const randomIntFromInterval = (min, max) => (Math.floor(Math.random() * (max - min + 1) + min));
-        const selectedPage = selectedToOnly ? selectedToOnly : listOfPages[randomIntFromInterval(0, listOfPages.length-1)]._id;
+       // const selectedPage = selectedToOnly ? selectedToOnly : listOfPages[randomIntFromInterval(0, listOfPages.length-1)]._id;
+        const randomSelectedPage = listOfPages[randomIntFromInterval(0, listOfPages.length-1)];
+        const selectedPage = randomSelectedPage._id;
+              sectionId = randomSelectedPage.section;
+        console.log(randomSelectedPage);
+        // const getSectionId = (sectionName)=>{
+        //       for(let x of listOfSections){
+        //            if((x.value).includes(sectionName)){
+        //                return x._id;
+        //            }
+        //       }
+        // }
 
-        const getSectionId = (sectionName)=>{
-              for(let x of listOfSections){
-                   if((x.value).includes(sectionName)){
-                       return x._id;
-                   }
-              }
-        }
+        // if(selectedPage.includes('funny')){
+        //     sectionId = getSectionId('funny');
+        // }else if(selectedPage.includes('india')){
+        //     sectionId = getSectionId('india');
+        // }else if(selectedPage.includes('comic') || selectedPage.includes('cartoon')){
+        //     sectionId = getSectionId('comic');
+        // }else if(selectedPage.includes('girl') || selectedPage.includes('girls')){
+        //     sectionId = getSectionId('girl');
+        // }else if(selectedPage.includes('tech')){
+        //     sectionId = getSectionId('tech');
+        // }
 
-        if(selectedPage.includes('funny')){
-            sectionId = getSectionId('funny');
-        }else if(selectedPage.includes('india')){
-            sectionId = getSectionId('india');
-        }else if(selectedPage.includes('comic') || selectedPage.includes('cartoon')){
-            sectionId = getSectionId('comic');
-        }else if(selectedPage.includes('girl') || selectedPage.includes('girls')){
-            sectionId = getSectionId('girl');
-        }
-
-        console.log(sectionId);
+        // console.log(sectionId);
         
         //UPDATE PAGE AND GET ONE URL
         const getNewUrl = await externalUrls.findOne({
@@ -304,8 +360,28 @@ export default {
 
     },
 
+    getLatestCursor : async (req, res)=>{
+        let { crawled_source, section_name } = req.body;
+        section_name = crawled_source > 1 ? `9gag_${section_name}` : section_name; 
+        //GET THE LATEST CURSOR
+        try {
+           const result = await latestCursor.findOne({
+                crawled_source,
+                source: section_name.trim()
+          });   
+          console.log(result); 
+          return res.status(200).send({
+                 data : result
+          });
+        } catch (error) {
+            return res.status(400).send({
+                error    
+            }) 
+        }
+    },
+
     nineGagCrawledUrls : async (req ,res)=>{
-        const { section_name, next_cursor } = req.body;
+        const { section_name, next_cursor, selected_section } = req.body;
         let cursor_url = null;
         if(next_cursor){
            //FIND THE LATEST NEXT CURSOR 
@@ -337,7 +413,30 @@ export default {
                source_name : `9gag_${section_name.trim()}`,
                source_urls : finalArray,
                crawled_source: 2,
-               next_cursor: nextCursor
+               next_cursor: nextCursor,
+               selected_section
+        })
+    },
+
+
+    compressImages : async (req, res)=>{
+        // const files = await imagemin(['compress_image/*.{jpg,png}'], {
+        //     destination: 'result_image',
+        //     plugins: [
+        //         imageminJpegtran({
+        //             quality: [0.2, 0.3]
+        //         }),
+        //         imageminPngquant({
+        //             quality: [0.2, 0.3]
+        //         })
+        //     ]
+        // });
+        
+        // console.log(files[0].data);  
+        // fs.writeFileSync(`result_image/test1.png`, files[0].data);
+        const s3Result = await uploadToS3('http://www.personal.psu.edu/crd5112/photos/GIF%20Example.gif');
+        res.send({
+            data: s3Result
         })
     }
      
