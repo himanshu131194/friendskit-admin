@@ -31,6 +31,12 @@ class Leftsidebar extends Component{
                                     <span className="menu-item-label">Crawler</span>
                                 </div>
                             </a>
+                            <a href="/latest-cursor" className="br-menu-link">
+                                <div className="br-menu-item">
+                                    <i className="menu-item-icon ion-ios-pie-outline tx-20"></i>
+                                    <span className="menu-item-label">Latest Cursor</span>
+                                </div>
+                            </a>
                             <a href="/9gag-crawler" className="br-menu-link">
                                 <div className="br-menu-item">
                                     <i className="menu-item-icon ion-ios-pie-outline tx-20"></i>

@@ -1,4 +1,4 @@
-import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, LIST_TAGS, LIST_DOCUMENTS, CURRENT_POST, COMMENTS_LIST, COMMENT_UPVOTE} from './types'
+import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, LIST_TAGS, LIST_DOCUMENTS, CURRENT_POST, COMMENTS_LIST, COMMENT_UPVOTE, LIST_CURSORS} from './types'
 import CONFIG from '../../../config'
 import axios from 'axios'
 
@@ -303,6 +303,24 @@ export const latestCursor = (section_details, cb)=>{
             }catch(e){
                 cb(e, null)
             }
+    }
+}
+
+
+
+export const listLatestCursors = (cb)=>{
+    return async (dispatch)=>{
+        let err = null, result = null;
+        try{
+            let {data} = await axios.get(`${CONFIG.API_URL}/api/latest-cursor`);
+                 result = data.data;
+        }catch(e){
+            err = e.response.data.error;
+        }
+        dispatch({
+            type: LIST_CURSORS,
+            payload: result
+        })
     }
 }
 

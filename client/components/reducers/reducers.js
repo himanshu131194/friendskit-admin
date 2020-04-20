@@ -1,4 +1,4 @@
-import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, LIST_TAGS, LIST_DOCUMENTS, CURRENT_POST, COMMENTS_LIST} from '../actions/types'
+import {LOAD_POSTS, AUTH_USERS, LIST_SECTIONS, LIST_TAGS, LIST_DOCUMENTS, CURRENT_POST, COMMENTS_LIST, LIST_CURSORS} from '../actions/types'
 
 export const listOfPostsReducer = (state=null, action)=>{
 	switch(action.type){
@@ -94,3 +94,15 @@ export const listOfCommentsReducer = (state=null, action)=>{
 		   return state;
 	}
 } 
+
+
+export const listOfLatestCursorsReducer = (state=[], action)=>{
+	switch(action.type){
+		  case LIST_CURSORS:
+			return action.payload;
+		  default: 
+		   return state;
+	}
+} 
+
+

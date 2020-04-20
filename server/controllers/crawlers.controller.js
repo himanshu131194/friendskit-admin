@@ -16,7 +16,7 @@ import fs from 'fs';
 
 const imagemin = require('imagemin');
 const imageminJpegtran = require('imagemin-jpegtran');
-const imageminPngquant = require('imagemin-pngquant');
+const imageminOptipng = require('imagemin-optipng');
 const imageminMozjpeg = require('imagemin-mozjpeg');
 const imageminWebp = require('imagemin-webp');
 const imageminGiflossy = require('imagemin-giflossy');
@@ -46,16 +46,26 @@ const uploadToS3 = async (externalUrl, data64)=>{
         //SAVE BUFFER AS PNG FORMAT 
         fs.writeFileSync(`result_image/${slugId}.${ext}`, result);
         //GET PNG FROM LOCAL AND COMPRESS AND RETURN COMPRESS BUFFF
-        const compressedContent = await imagemin([`result_image/${slugId}.{jpg,png,webp,gif}`], {
-            plugins: [
-                imageminMozjpeg({quality: 50}),
-                imageminPngquant({
-                    quality: [0.4, 0.5]
-                }),
-                imageminWebp({quality: 50}),
-                imageminGiflossy({lossy: 30})
-            ] 
-        });
+
+
+        const compressedContent = await imagemin([`result_image/${slugId}.{jpg,png,webp,gif}`], 
+        {
+            use: [
+                imageminJpegtran(),
+                imageminOptipng()
+            ]
+        }       
+        );
+        // const compressedContent = await imagemin([`result_image/${slugId}.{jpg,png,webp,gif}`], {
+        //     plugins: [
+        //         imageminMozjpeg({quality: 80}),
+        //         imageminPngquant({
+        //             quality: [0.6, 0.8]
+        //         }),
+        //         imageminWebp({quality: 80}),
+        //         imageminGiflossy({lossy: 80})
+        //     ] 
+        // });
         result = compressedContent[0].data;
         //DELETE PNG FROM LOCAL
         fs.unlinkSync(`result_image/${slugId}.${ext}`);
@@ -79,17 +89,7 @@ const uploadToS3 = async (externalUrl, data64)=>{
             mime: type,
             ext
         });
-
-       const documentsObj = new Documents({
-           url : `https://${CONFIG.S3.BUCKET}.s3.ap-south-1.amazonaws.com/${key}`,
-           key: key,
-           slug: slugId,
-           mime: type,
-           ext
-       });
-
-       await documentsObj.save();
-
+        
        return {
             s3_url : `https://${CONFIG.S3.BUCKET}.s3.ap-south-1.amazonaws.com/${key}`,
             slug_id : slugId,
@@ -120,8 +120,12 @@ export default {
             });
             if(!result){
                 const s3Result = await uploadToS3(x.trim());
+                let url = x.trim();
+                if(crawled_source===1){
+                   url = current_url;
+                }
                 resultArray.push({
-                    url: x.trim(),
+                    url,
                     s3_url: s3Result.s3_url, 
                     slug_id: s3Result.slug_id,
                     mime_type: s3Result.mime,
@@ -132,10 +136,6 @@ export default {
                     section: mongoose.Types.ObjectId(selected_section)
                 });
                 //UPATE THE LATEST CURSOR COLLECTION
-                let url = x.trim();
-                if(crawled_source===1){
-                   url = current_url;
-                }
                 console.log('crawled_source');
                 console.log(crawled_source);
 
@@ -186,31 +186,31 @@ export default {
     listCrawledPages : async (req, res)=>{
         try{
            const sections = await externalUrls.aggregate([
-               {
-                $group: {
-                    _id : "$source" ,
-                    'yesCount': {
-                        "$sum": {
-                            "$cond": [ "$post_uploaded", 1, 0 ]
-                        }
-                    },
-                    'noCount': {
-                        "$sum": {
-                            "$cond": [ "$post_uploaded", 0, 1 ]
-                        }
-                    },
-                    'totalCount': {
-                             $sum : 1
+                {
+                    $group: {
+                        _id : "$source" ,
+                        'yesCount': {
+                            "$sum": {
+                                "$cond": [ "$post_uploaded", 1, 0 ]
+                            }
+                        },
+                        'noCount': {
+                            "$sum": {
+                                "$cond": [ "$post_uploaded", 0, 1 ]
+                            }
+                        },
+                        'totalCount': {
+                                $sum : 1
+                        },
                     }
                 }
-               }
            ]);
            res.status(200).send({
                data : sections  
            })
         }catch(e){
            res.status(400).send({
-               error : CONFIG.ERRORS[100]
+               error : e
            })
          }
     },
@@ -361,18 +361,15 @@ export default {
     },
 
     getLatestCursor : async (req, res)=>{
-        let { crawled_source, section_name } = req.body;
-        section_name = crawled_source > 1 ? `9gag_${section_name}` : section_name; 
+        // let { crawled_source, section_name } = req.body;
+        // section_name = crawled_source > 1 ? `9gag_${section_name}` : section_name; 
         //GET THE LATEST CURSOR
         try {
-           const result = await latestCursor.findOne({
-                crawled_source,
-                source: section_name.trim()
-          });   
-          console.log(result); 
-          return res.status(200).send({
+            const result = await latestCursor.find({
+            }).sort({ created : -1});   
+            return res.status(200).send({
                  data : result
-          });
+            });
         } catch (error) {
             return res.status(400).send({
                 error    

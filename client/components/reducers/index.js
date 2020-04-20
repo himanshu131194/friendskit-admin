@@ -1,6 +1,6 @@
 import {combineReducers} from 'redux'
 import {listOfPostsReducer, authUsersReducer, listOfSectionsReducer, listOfTagsReducer,  listOfDocumentsReducer, 
-	    selectedPostReducer, listOfCommentsReducer, listOfCrawledSourcesReducer} from './reducers'
+	    selectedPostReducer, listOfCommentsReducer, listOfCrawledSourcesReducer, listOfLatestCursorsReducer} from './reducers'
 
 export default combineReducers({
 	  listOfPosts :  listOfPostsReducer,
@@ -10,5 +10,6 @@ export default combineReducers({
 	  listOfDocuments : listOfDocumentsReducer,
 	  user : authUsersReducer,
 	  selectedPost : selectedPostReducer,
-	  listOfComments: listOfCommentsReducer
+	  listOfComments: listOfCommentsReducer,
+	  listOfLatestCursors: listOfLatestCursorsReducer
 })

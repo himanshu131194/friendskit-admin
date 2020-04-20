@@ -25,6 +25,7 @@
     "imagemin-giflossy": "^5.1.10",
     "imagemin-jpegtran": "^6.0.0",
     "imagemin-mozjpeg": "^8.0.0",
+    "imagemin-optipng": "^7.1.0",
     "imagemin-pngquant": "^8.0.0",
     "imagemin-webp": "^5.1.0",
     "lodash": "^4.17.15",

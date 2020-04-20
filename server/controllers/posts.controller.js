@@ -49,11 +49,11 @@ export default {
     listUniversalUploads : async (req, res)=>{
         try{
            const documents = await Documents.find({}).sort({created: -1});
-           res.status(200).send({
+           return res.status(200).send({
                data : documents  
            })
         }catch(e){
-           res.status(400).send({
+           return res.status(400).send({
                error : CONFIG.ERRORS[100]
            })
          }
@@ -75,9 +75,6 @@ export default {
                          console.log('ext')
                          console.log(ext)
              }
-
-
-
 
              ext = listOfSupportedExtns.indexOf(ext)<0 ? 'jpg': ext;
              const slugId = uuid();

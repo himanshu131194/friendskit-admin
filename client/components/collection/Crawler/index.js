@@ -12,6 +12,7 @@ class Header extends Component{
       source_urls = React.createRef();
       post_counter = React.createRef();
       postButton = React.createRef();
+      stopButton = React.createRef();
       counter = 0;
       keepPosting = true;
       
@@ -53,10 +54,12 @@ class Header extends Component{
             if(this.keepPosting){
                 currentEle.click();
                 console.log('posted');
+                this.stopButton.current.classList.remove('is-disabled');
             }else{
                 console.log('stopped');
                 this.keepPosting= true;
                 currentEle.classList.remove('is-disabled');
+                this.stopButton.current.classList.add('is-disabled');
             }
           }
       }
@@ -87,7 +90,7 @@ class Header extends Component{
                                 </div> 
                                 <div className="col-lg-2">
                                         <div className="form-group">
-                                            <button className="btn btn-danger btn-block uppercase mg-b-10" onClick={this.stopKeepPosting}>stop</button>
+                                            <button ref={this.stopButton} className="btn btn-danger btn-block uppercase mg-b-10 is-disabled" onClick={this.stopKeepPosting}>stop</button>
                                         </div>
                                 </div> 
                                     {/* <div className="col-lg-4">
