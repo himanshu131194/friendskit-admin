@@ -22,7 +22,7 @@ class MainRouter extends Component{
                	    <Route exact path="/" component={Home}/>
 					<Route path="/uploader" component={UniversalUpload}/>
 					<Route path="/tags" component={AddTags}/>
-					<Route path="/crawler" component={Crawler}/>
+					<Route path="/upload-live" component={Crawler}/>
 					<Route path="/9gag-crawler" component={NineGagCrawler}/>
 					<Route path="/latest-cursor" component={LatestCursor}/>
                </Switch>

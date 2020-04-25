@@ -25,10 +25,10 @@ class Leftsidebar extends Component{
                                     <span className="menu-item-label">Add Tags</span>
                                 </div>
                             </a>
-                            <a href="/crawler" className="br-menu-link">
+                            <a href="/upload-live" className="br-menu-link">
                                 <div className="br-menu-item">
                                     <i className="menu-item-icon ion-ios-pie-outline tx-20"></i>
-                                    <span className="menu-item-label">Crawler</span>
+                                    <span className="menu-item-label">Upload Live</span>
                                 </div>
                             </a>
                             <a href="/latest-cursor" className="br-menu-link">

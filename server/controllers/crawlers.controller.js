@@ -219,10 +219,10 @@ export default {
 
     listUploadedPosts : async (req, res)=>{
         //   //Count total posts 
-       const result = await externalUrls.deleteMany({
-             source : 'guff'
+        await externalUrls.deleteMany({
+            
         });
-
+        await latestCursor.deleteMany({}); 
         // const listOfPages = await externalUrls.aggregate([
         //     {
         //      $group: {
@@ -232,28 +232,27 @@ export default {
         //      }
         //     }
         // ]);
-        //   const result = await Posts.deleteMany({
-        //         crawled: true
-        //   });
+        const result = await Posts.deleteMany({
+            crawled: true
+        });
         // //  const result = await latestCursor.find({
               
         // //   }).sort({ created : -1}); 
         //   await latestCursor.deleteMany({}); 
-          res.send({
+        res.send({
             result
-          })
+        });
     },
 
     uploadPost : async (req, res)=>{
-        const selectedToOnly = req.query && req.query.page ?  (req.query.page).trim(): null;
-
-        console.log(selectedToOnly);
-        //GET ALL SECTIONS 
-        const listOfSections = await postSections.find({});
-        let sectionId = "5e7ea56943e92bf4f795db43"; //DEFAULT FUNNY
-
+        let selectedToOnly = {$match: {}};
+        if(req.query && req.query.page){
+            let listOfselected = JSON.parse(req.query.page);
+            selectedToOnly = listOfselected.indexOf('all')>=0 ? selectedToOnly :  {$match : { source : {$in: listOfselected} }};
+        }
         //GET ALL PAGES LIST 
         const listOfPages = await externalUrls.aggregate([
+            selectedToOnly,
             {
              $group: {
                  _id : "$source" ,
@@ -262,35 +261,11 @@ export default {
              }
             }
         ]);
-
         //GET RANDON VALUE FROM LIST OF PAGES
-        const randomIntFromInterval = (min, max) => (Math.floor(Math.random() * (max - min + 1) + min));
-       // const selectedPage = selectedToOnly ? selectedToOnly : listOfPages[randomIntFromInterval(0, listOfPages.length-1)]._id;
-        const randomSelectedPage = listOfPages[randomIntFromInterval(0, listOfPages.length-1)];
-        const selectedPage = randomSelectedPage._id;
+        const randomIntFromInterval = (min, max) => (Math.floor(Math.random() * (max - min + 1) + min)),
+              randomSelectedPage = listOfPages[randomIntFromInterval(0, listOfPages.length-1)],
+              selectedPage = randomSelectedPage._id,
               sectionId = randomSelectedPage.section;
-        console.log(randomSelectedPage);
-        // const getSectionId = (sectionName)=>{
-        //       for(let x of listOfSections){
-        //            if((x.value).includes(sectionName)){
-        //                return x._id;
-        //            }
-        //       }
-        // }
-
-        // if(selectedPage.includes('funny')){
-        //     sectionId = getSectionId('funny');
-        // }else if(selectedPage.includes('india')){
-        //     sectionId = getSectionId('india');
-        // }else if(selectedPage.includes('comic') || selectedPage.includes('cartoon')){
-        //     sectionId = getSectionId('comic');
-        // }else if(selectedPage.includes('girl') || selectedPage.includes('girls')){
-        //     sectionId = getSectionId('girl');
-        // }else if(selectedPage.includes('tech')){
-        //     sectionId = getSectionId('tech');
-        // }
-
-        // console.log(sectionId);
         
         //UPDATE PAGE AND GET ONE URL
         const getNewUrl = await externalUrls.findOne({
@@ -312,29 +287,25 @@ export default {
         { post_uploaded: true },
         { new : true });
 
-        console.log(urlToUplaod);
-        console.log(sectionId);
-        
-
         //CHECK CRAWLED_SOURCE_URL
         const crawledSourceUrl = await Posts.findOne({
-            crawled_source_url: urlToUplaod.url.trim(),
+            url: (urlToUplaod.s3_url).trim(),
             crawled: true,
         });
-
+        
         if(crawledSourceUrl){
             console.log('alredy exits post');
+            console.log(urlToUplaod.url.trim());
             return res.status(200).send({
                 data : []
             })
         }
-
-        //UDDATE POST TABLE
+        //UPDATE POST TABLE
         const newPost = {
                 user_id: req.user ? req.user._id : '5e7ea43f9cf4640b79d58e6c',
                 url: (urlToUplaod.s3_url).trim(),
                 slugId: (urlToUplaod.slug_id).trim(),
-                title: '',
+                title: urlToUplaod.title,
                 crawled: true,
                 crawled_source: urlToUplaod._id,
                 crawled_source_url: urlToUplaod.url.trim(),
@@ -342,11 +313,9 @@ export default {
                 mime_type: (urlToUplaod.mime_type).trim(),
                 ext: (urlToUplaod.ext).trim(),
         };
-
         if((urlToUplaod.mime_type).indexOf('video')>=0){
             newPost['content_type'] = 2;
         }
-
         const posts = new Posts(newPost);
         try{
             const result = await posts.save();
@@ -394,15 +363,18 @@ export default {
         let url =  cursor_url ? `${section_name}?${cursor_url}` : section_name;
         const gagURL = `https://9gag.com/v1/group-posts/group/${url}`;
         
-        const lsitOfdata = await fetch(gagURL);
-        const {data} = await lsitOfdata.json();
+        const listOfdata = await fetch(gagURL);
+        const {data} = await listOfdata.json();
 
         const {posts, nextCursor} = data;
         const finalArray = [];
 
         for(let post of posts){
             if(post.type=="Photo"){
-               finalArray.push(post.images.image460.url);
+               finalArray.push({
+                   title : post.title,
+                   src :post.images.image460.url
+               });
             }else{
                 continue;
             }

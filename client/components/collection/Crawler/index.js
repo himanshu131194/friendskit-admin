@@ -7,7 +7,10 @@ import List from './List'
 import axios from 'axios'
 
 class Header extends Component{
-
+      
+      state = {
+        listOfSelectedSources : []
+      }
       source_name= React.createRef();
       source_urls = React.createRef();
       post_counter = React.createRef();
@@ -41,11 +44,10 @@ class Header extends Component{
       addNewPosts = async (e)=>{
           const currentEle = e.target;
           currentEle.classList.add('is-disabled');
-          const sourceName = this.source_name.current.value;
           
           const baseUrl = `${CONFIG.API_URL}/api/post-crawled-urls`;
 
-          const url = sourceName!=='' ? `${baseUrl}?page=${sourceName}` : baseUrl;
+          const url = this.state.listOfSelectedSources.length>0 ? `${baseUrl}?page=${JSON.stringify(this.state.listOfSelectedSources)}` : baseUrl;
 
           const result = await axios.get(url);
           if(result){
@@ -70,22 +72,17 @@ class Header extends Component{
                 <div className="br-mainpanel">
                     <div className="br-pagebody">
                         <div className="br-section-wrapper">
-                            <h6 className="tx-gray-800 tx-uppercase tx-bold tx-14 mg-b-10">Sections details</h6>
-                            <p className="mg-b-30 tx-gray-600">A form with a label on top of each form control.</p>
+                            <h6 className="tx-gray-800 tx-uppercase tx-bold tx-14 mg-b-10">Upload details</h6>
+                            <p className="mg-b-30 tx-gray-600"></p>
 
                             <div className="form-layout">
                                 <div className="row">
-                                <div className="col-lg-3">
-                                        <div className="form-group">
-                                            <input className="form-control" ref={this.source_name} type="text" name="firstname" placeholder="Name" />
-                                        </div>
-                                </div>
                                 <div className="col-lg-1">
                                      <h1 ref={this.post_counter}>0</h1>
                                 </div>
                                 <div className="col-lg-3">
                                         <div className="form-group">
-                                            <button ref={this.postButton} className="btn btn-primary btn-block uppercase mg-b-10" onClick={this.addNewPosts}>Uplaod New Posts</button>
+                                            <button ref={this.postButton} className={this.state.listOfSelectedSources.length>0 ? "btn btn-primary btn-block uppercase mg-b-10" : "btn btn-primary btn-block uppercase mg-b-10 is-disabled"} onClick={this.addNewPosts}>Uplaod New Posts</button>
                                         </div>
                                 </div> 
                                 <div className="col-lg-2">
@@ -111,7 +108,7 @@ class Header extends Component{
                                 </div>
                             </div>
                        
-                            <List/>
+                            <List  onListOfSelectedSource={(sources)=> { this.setState({ listOfSelectedSources: sources }) }}/>
                         </div>
                     </div>
                 </div>
