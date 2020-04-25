@@ -6,6 +6,9 @@ const externalUrls = new mongoose.Schema({
       url:{
         type: String
       },
+      title:{
+        type: String
+      },
       s3_url:{
           type: String
       },

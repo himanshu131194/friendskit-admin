@@ -116,16 +116,18 @@ export default {
         const resultArray = [];
         for(let x of urlsArray){
             const result = await externalUrls.findOne({ 
-                  url : x.trim()
+                  url : x.src.trim()
             });
+            let title = x.title;
             if(!result){
-                const s3Result = await uploadToS3(x.trim());
-                let url = x.trim();
+                const s3Result = await uploadToS3(x.src.trim());
+                let url = x.src.trim();
                 if(crawled_source===1){
                    url = current_url;
                 }
                 resultArray.push({
                     url,
+                    title,
                     s3_url: s3Result.s3_url, 
                     slug_id: s3Result.slug_id,
                     mime_type: s3Result.mime,
@@ -217,8 +219,8 @@ export default {
 
     listUploadedPosts : async (req, res)=>{
         //   //Count total posts 
-         await externalUrls.deleteMany({
-            
+       const result = await externalUrls.deleteMany({
+             source : 'guff'
         });
 
         // const listOfPages = await externalUrls.aggregate([
@@ -230,13 +232,13 @@ export default {
         //      }
         //     }
         // ]);
-          const result = await Posts.deleteMany({
-                crawled: true
-          });
-        //  const result = await latestCursor.find({
+        //   const result = await Posts.deleteMany({
+        //         crawled: true
+        //   });
+        // //  const result = await latestCursor.find({
               
-        //   }).sort({ created : -1}); 
-          await latestCursor.deleteMany({}); 
+        // //   }).sort({ created : -1}); 
+        //   await latestCursor.deleteMany({}); 
           res.send({
             result
           })
