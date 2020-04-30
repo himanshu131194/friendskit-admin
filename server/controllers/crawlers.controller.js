@@ -111,9 +111,9 @@ export default {
         const next_cursor = req.body.next_cursor ? req.body.next_cursor.trim(): null;
         const { source_urls, source_name, crawled_source, current_url, selected_section } = req.body;
         //CHECK URL IS ALREADY IN DB 
-        const urlsArray = source_urls;
+        const urlsArray = source_urls.reverse();
         const is_present = false;
-        const resultArray = [];
+        let resultArray = [];
         for(let x of urlsArray){
             const result = await externalUrls.findOne({ 
                   url : x.src.trim()
@@ -149,6 +149,7 @@ export default {
             }
         }
         console.log(resultArray);
+        resultArray = resultArray.reverse();
         externalUrls.insertMany(resultArray, (err, data)=>{
             console.log(data);
             res.send({
@@ -289,7 +290,7 @@ export default {
 
         //CHECK CRAWLED_SOURCE_URL
         const crawledSourceUrl = await Posts.findOne({
-            url: (urlToUplaod.s3_url).trim(),
+            crawled_source_url: urlToUplaod.url.trim(),
             crawled: true,
         });
         
@@ -348,19 +349,30 @@ export default {
         }
     },
 
+    latestCursor : async (req, res)=>{
+        let { crawled_source, section_name } = req.body;
+        section_name = crawled_source > 1 ? `9gag_${section_name}` : section_name; 
+        //GET THE LATEST CURSOR
+        try {
+            const result = await latestCursor.findOne({
+                crawled_source, 
+                source: section_name.trim()
+            }).sort({ created : -1});   
+            return res.status(200).send({
+                 data : result
+            });
+        } catch (error) {
+            return res.status(400).send({
+                error    
+            }) 
+        }
+    },
+
     nineGagCrawledUrls : async (req ,res)=>{
         const { section_name, next_cursor, selected_section } = req.body;
-        let cursor_url = null;
-        if(next_cursor){
-           //FIND THE LATEST NEXT CURSOR 
-           const result = await externalUrls.find({
-               source: '9gag_'+section_name.trim(),
-           }).sort({'created':-1});
-           console.log(result);
-           cursor_url = result ? result[0].next_cursor : null;
-        }
-        
-        let url =  cursor_url ? `${section_name}?${cursor_url}` : section_name;
+        let cursor_url = null;        
+        let url =  next_cursor ? `${section_name}?${next_cursor}` : section_name;
+
         const gagURL = `https://9gag.com/v1/group-posts/group/${url}`;
         
         const listOfdata = await fetch(gagURL);
@@ -402,7 +414,6 @@ export default {
         //         })
         //     ]
         // });
-        
         // console.log(files[0].data);  
         // fs.writeFileSync(`result_image/test1.png`, files[0].data);
         const s3Result = await uploadToS3('http://www.personal.psu.edu/crd5112/photos/GIF%20Example.gif');

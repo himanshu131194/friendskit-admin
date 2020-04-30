@@ -10,6 +10,7 @@ class AddTags extends Component{
       next_cursor = null;
       total_count =  React.createRef();
       selected_section = React.createRef();
+      crawl_new = React.createRef();
 
       componentDidMount(){
         this.props.listSections();
@@ -84,7 +85,7 @@ class AddTags extends Component{
                                     </div>
                                     <div className="col-lg-2">
                                         <div className="form-group">
-                                            <button id="dddddddd" className="btn btn-primary btn-block uppercase mg-b-10" onClick={this.onSectionName}>craw new data</button>
+                                            <button ref={this.crawl_new} className="btn btn-primary btn-block uppercase mg-b-10" onClick={this.onSectionName}>craw new data</button>
                                         </div>
                                     </div>
                                     <div className="col-lg-2">
