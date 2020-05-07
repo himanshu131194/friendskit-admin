@@ -220,10 +220,12 @@ export default {
 
     listUploadedPosts : async (req, res)=>{
         //   //Count total posts 
-        await externalUrls.deleteMany({
-            
+        await externalUrls.updateMany({
+             
+        },{
+            post_uploaded: false
         });
-        await latestCursor.deleteMany({}); 
+        // await latestCursor.deleteMany({}); 
         // const listOfPages = await externalUrls.aggregate([
         //     {
         //      $group: {
@@ -234,12 +236,39 @@ export default {
         //     }
         // ]);
         const result = await Posts.deleteMany({
-            crawled: true
+            // crawled: true
         });
         // //  const result = await latestCursor.find({
-              
+        //  const result = await Posts.createIndexes({ created : -1});
+        // const result = await Posts.find({
+        //     _id : '5eacb1f26846567f35480ec6'//mongoose.Schema.ObjectId('5eacb1f26846567f35480ec6')
+        // })
         // //   }).sort({ created : -1}); 
         //   await latestCursor.deleteMany({}); 
+        // 'yesCount': {
+        //     "$sum": {
+        //         "$cond": [ "$post_uploaded", 1, 0 ]
+        //     }
+        // },
+
+//         const result= await Posts.find({ }, {
+//             like_count: 1,
+//             comment_count: 1,
+//             share_count: 1,
+//             download_count: 1,
+//             user_id: 1,
+//             url: 1,
+//             title: 1,
+//             section: 1,
+//             mime_type: 1,
+//             ext: 1,
+//             created: 1,
+//             liked: 1,
+//         }).populate('section')
+//                      .sort({ _id: -1})
+//                      .skip(0)
+//                      .limit(2);
+
         res.send({
             result
         });
