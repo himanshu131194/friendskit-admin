@@ -9,8 +9,8 @@
     "start": "NODE_ENV=production node ./dist/server.generated.js"
   },
   "engines": {
-    "node": "8.11.1",
-    "npm": "5.8.0"
+    "node": "12.16.x",
+    "npm": "6.x"
   },
   "dependencies": {
     "aws-sdk": "^2.621.0",
