@@ -28,7 +28,7 @@ class Leftsidebar extends Component{
                             <a href="/upload-live" className="br-menu-link">
                                 <div className="br-menu-item">
                                     <i className="menu-item-icon ion-ios-pie-outline tx-20"></i>
-                                    <span className="menu-item-label">Upload Live</span>
+                                    <span className="menu-item-label">List Uploaded</span>
                                 </div>
                             </a>
                             <a href="/latest-cursor" className="br-menu-link">
@@ -43,15 +43,16 @@ class Leftsidebar extends Component{
                                     <span className="menu-item-label">9GAG Crawler</span>
                                 </div>
                             </a>
-                            
-                            <a href="#" className="br-menu-link">
+
+                            <a href="/insta-crawler" className="br-menu-link">
                                 <div className="br-menu-item">
                                     <i className="menu-item-icon icon ion-ios-filing-outline tx-24"></i>
-                                    <span className="menu-item-label">UI Elements</span>
-                                    <i className="menu-item-arrow fa fa-angle-down"></i>
+                                    <span className="menu-item-label">INSTA CRAWLER</span>
                                 </div>
                             </a>
-                            <ul className="br-menu-sub nav flex-column">
+
+
+                            {/* <ul className="br-menu-sub nav flex-column">
                                 <li className="nav-item"><a href="accordion.html" className="nav-link">Accordion</a></li>
                                 <li className="nav-item"><a href="alerts.html" className="nav-link">Alerts</a></li>
                                 <li className="nav-item"><a href="buttons.html" className="nav-link">Buttons</a></li>
@@ -187,7 +188,7 @@ class Leftsidebar extends Component{
                                     <rect fill="#336490" x="48.6" y="15.555555555555554" width="4.799999999999997" height="19.444444444444446"></rect>
                                     <rect fill="#336490" x="54.6" y="0" width="4.799999999999997" height="35"></rect>
                                 </svg>
-                            </div>
+                            </div> */}
 
                             <div className="d-flex align-items-center justify-content-between pd-x-15 mg-t-20">
                                 <div>

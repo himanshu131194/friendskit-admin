@@ -13,7 +13,9 @@ export default (router)=>{
 
     router.get('/compressed-images', crawlersController.compressImages);
 
+    router.get('/insta-crawler', crawlersController.instagramCrawler);
 
-    
+    router.post('/insta-crawled-urls', crawlersController.instaCrawledUrls);
+
     return router;
 }

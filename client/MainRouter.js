@@ -11,6 +11,8 @@ import AddTags from './components/collection/AddTags';
 import Crawler from './components/collection/Crawler'
 import LatestCursor from './components/collection/LatestCursor'
 import NineGagCrawler from './components/collection/NineGagCrawler'
+import InstagramCrawler from './components/collection/InstagramCrawler'
+
 
 class MainRouter extends Component{
 	  render(){
@@ -23,7 +25,7 @@ class MainRouter extends Component{
 					<Route path="/uploader" component={UniversalUpload}/>
 					<Route path="/tags" component={AddTags}/>
 					<Route path="/upload-live" component={Crawler}/>
-					<Route path="/9gag-crawler" component={NineGagCrawler}/>
+					<Route path="/insta-crawler" component={InstagramCrawler}/>
 					<Route path="/latest-cursor" component={LatestCursor}/>
                </Switch>
              </Fragment>

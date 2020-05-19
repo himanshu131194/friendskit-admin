@@ -35,6 +35,9 @@ const externalUrls = new mongoose.Schema({
       next_cursor:{
         type: String
       },
+      cursor_id:{
+        type: String
+      },
       section:{
         type:mongoose.Schema.ObjectId,
         ref: 'sections'

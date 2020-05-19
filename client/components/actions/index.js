@@ -290,6 +290,18 @@ export const crawlNineGag = (section_details, cb)=>{
     }
 }
 
+export const crawlInstaGram = (section_details, cb)=>{
+    return async ()=>{
+        let result = null;
+            try{
+                let {data} = await axios.post(`${CONFIG.API_URL}/api/insta-crawled-urls`, section_details);
+                result = data;
+                cb(null, result)
+            }catch(e){
+                cb(e, null)
+            }
+    }
+}
 
 
 export const latestCursor = (section_details, cb)=>{

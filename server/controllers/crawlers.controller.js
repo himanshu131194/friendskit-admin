@@ -8,10 +8,15 @@ import latestCursor from '../models/latest_cursor.model'
 import mongoose from 'mongoose'
 import CONFIG from '../../config';
 import uuid from 'uuid/v4';
-import AWS from 'aws-sdk'
+import AWS, { CostExplorer } from 'aws-sdk'
 import moment from 'moment'
 import fetch from 'node-fetch';
 import fs from 'fs';
+
+
+//LIBS FOR INSTACRAWLER
+import getEmails from 'get-emails';
+import got from 'got';
 
 
 const imagemin = require('imagemin');
@@ -109,6 +114,7 @@ export default {
     storeAllCrawledUrls : async (req ,res)=>{
         console.log(req.body);
         const next_cursor = req.body.next_cursor ? req.body.next_cursor.trim(): null;
+        const cursor_id = req.body.cursor_id ? req.body.cursor_id : null;
         const { source_urls, source_name, crawled_source, current_url, selected_section } = req.body;
         //CHECK URL IS ALREADY IN DB 
         const urlsArray = source_urls.reverse();
@@ -135,6 +141,7 @@ export default {
                     crawled_source,
                     source: source_name.toLowerCase().trim(),
                     next_cursor,
+                    cursor_id,
                     section: mongoose.Types.ObjectId(selected_section)
                 });
                 //UPATE THE LATEST CURSOR COLLECTION
@@ -219,12 +226,14 @@ export default {
     },
 
     listUploadedPosts : async (req, res)=>{
+        console.log('lsit of ')
+
         //   //Count total posts 
-        await externalUrls.updateMany({
+        // await externalUrls.updateMany({
              
-        },{
-            post_uploaded: false
-        });
+        // },{
+        //     post_uploaded: false
+        // });
         // await latestCursor.deleteMany({}); 
         // const listOfPages = await externalUrls.aggregate([
         //     {
@@ -235,9 +244,9 @@ export default {
         //      }
         //     }
         // ]);
-        const result = await Posts.deleteMany({
+        // const result = await Posts.deleteMany({
             // crawled: true
-        });
+        // });
         // //  const result = await latestCursor.find({
         //  const result = await Posts.createIndexes({ created : -1});
         // const result = await Posts.find({
@@ -430,6 +439,101 @@ export default {
         })
     },
 
+    instaCrawledUrls : async (req ,res)=>{
+        console.log(req.body);
+
+        const QUERY_HASH = '58b6785bea111c67129decbe6a448951';
+        let { section_name: username, next_cursor, cursor_id, selected_section } = req.body;
+        let listOfLatestposts = [], uniqueName=''; 
+
+        const transformPosts = (posts = []) => posts.map(({node}) => ({
+            ...node,
+            comments: node.edge_media_to_comment ? node.edge_media_to_comment.count : 0,
+            likes: node.edge_liked_by ? node.edge_liked_by.count : 0,
+            media: node.display_url,
+            text: node.edge_media_to_caption.edges.map(({node: {text}}) => text).join(''),
+            time: node.taken_at_timestamp,
+            type: node.is_video ? 'video' : 'image',
+            url: `https://www.instagram.com/p/${node.shortcode}`,
+            username: node.owner.username
+        }));
+
+        const fetchMorePosts = async (prev_cursor_id, prev_next_cursor)=>{
+            // console.log('fetchMorePosts');
+            // console.log(cursor_id)
+            // console.log(typeof next_cursor)
+            let k = JSON.stringify({"id":prev_cursor_id,"first":12,"after": prev_next_cursor.toString()});
+
+            const result = await fetch('https://www.instagram.com/graphql/query/?query_hash='+QUERY_HASH+'&variables='+k);
+            const { data: { user : { edge_owner_to_timeline_media: { edges: currentPosts, page_info } } } } = await result.json();
+            const { has_next_page, end_cursor } = page_info;
+
+            next_cursor = has_next_page ? end_cursor: null;
+            cursor_id = has_next_page ? prev_cursor_id: null;
+            console.log(next_cursor.toString());    
+           // console.log(currentPosts);
+            listOfLatestposts = currentPosts;
+        }
+
+        if(next_cursor && cursor_id){
+            console.log('insdie new task')
+            // console.log(next_cursor);
+            // console.log(cursor_id);
+
+            await fetchMorePosts(cursor_id, next_cursor);
+        }else{
+            uniqueName = username.trim();
+            const url = `https://instagram.com/${uniqueName}`;
+            const {graphql: { user } } = await got(url, {searchParams: {__a: 1}}).json();   
+            const email = getEmails(user.biography).values().next().value || '';
+            const {
+                edge_owner_to_timeline_media : {
+                    edges : currentPosts,
+                    page_info: {end_cursor, has_next_page}
+                },
+                id
+            } =  {
+                ...user,
+                description: user.biography,
+                email,
+                followers: user.edge_followed_by.count,
+                following: user.edge_follow.count,
+                fullName: user.full_name,
+                posts: user.edge_owner_to_timeline_media.count,
+                url,
+                username: uniqueName,
+                website: user.external_url
+            };
+            next_cursor = has_next_page ? end_cursor: null;
+            cursor_id = has_next_page ? id: null;
+            listOfLatestposts = currentPosts;
+        }
+        
+        //console.log(listOfLatestposts);
+        
+        console.log('finalArray')
+        const finalArray = [];
+        for(let post of transformPosts(listOfLatestposts)){
+            if(post.type==='image'){
+               finalArray.push({
+                   title : (post.text).split('\n')[0],
+                   src :post.display_url
+               });
+            }else{
+                continue;
+            }
+        }
+
+        return res.status(200).send({
+               source_name : `insta_${username}`,
+               source_urls : finalArray,
+               crawled_source: 3,
+               next_cursor,
+               cursor_id,
+               selected_section
+        })
+    },
+
 
     compressImages : async (req, res)=>{
         // const files = await imagemin(['compress_image/*.{jpg,png}'], {
@@ -449,6 +553,118 @@ export default {
         res.send({
             data: s3Result
         })
-    }
-     
+    },
+    
+    instagramCrawler : async (req, res)=>{
+
+
+
+            const QUERY_HASH = '58b6785bea111c67129decbe6a448951';
+            const transformPosts = (posts = []) => posts.map(({node}) => ({
+                ...node,
+                comments: node.edge_media_to_comment ? node.edge_media_to_comment.count : 0,
+                likes: node.edge_liked_by ? node.edge_liked_by.count : 0,
+                media: node.display_url,
+                text: node.edge_media_to_caption.edges.map(({node: {text}}) => text).join(''),
+                time: node.taken_at_timestamp,
+                type: node.is_video ? 'video' : 'image',
+                url: `https://www.instagram.com/p/${node.shortcode}`,
+                username: node.owner.username
+            }));
+
+            const username = req.query.username;
+            const url = `https://instagram.com/${username}`;
+            const {graphql: { user} } = await got(url, {searchParams: {__a: 1}}).json();   
+            const email = getEmails(user.biography).values().next().value || '';
+            const data =  {
+                ...user,
+                description: user.biography,
+                email,
+                followers: user.edge_followed_by.count,
+                following: user.edge_follow.count,
+                fullName: user.full_name,
+                posts: user.edge_owner_to_timeline_media.count,
+                url,
+                username,
+                website: user.external_url
+            };
+
+            const {
+                edge_owner_to_timeline_media: {
+                    edges: currentPosts,
+                    page_info: {end_cursor, has_next_page}
+                },
+                id
+            } = data;
+
+
+            return res.send({
+                data : transformPosts(currentPosts)
+            })
+    } 
 }
+
+
+
+
+// 'use strict';
+// const getEmails = require('get-emails');
+// const got = require('got');
+
+// module.exports = async username => {
+// 	if (typeof username !== 'string') {
+// 		throw new TypeError(`Expected \`username\` to be of type \`string\` but received type \`${typeof username}\``);
+// 	}
+
+// 	try {
+// 		const url = `https://instagram.com/${username}`;
+// 		const {graphql: {user}} = await got(url, {searchParams: {__a: 1}}).json();
+// 		const email = getEmails(user.biography).values().next().value || '';
+
+// 		return {
+// 			...user,
+// 			description: user.biography,
+// 			email,
+// 			followers: user.edge_followed_by.count,
+// 			following: user.edge_follow.count,
+// 			fullName: user.full_name,
+// 			posts: user.edge_owner_to_timeline_media.count,
+// 			url,
+// 			username,
+// 			website: user.external_url
+// 		};
+// 	} catch (error) {
+// 		if (error.response.statusCode === 404) {
+// 			error.message = `User "${username}" not found`;
+// 		}
+
+// 		throw error;
+// 	}
+// };
+
+
+// {
+//     node: {
+//       __typename: 'GraphImage',
+//       id: '2310480928324321494',
+//       shortcode: 'CAQeimxFgDW',
+//       dimensions: [Object],
+//       display_url: 'https://instagram.fblr2-1.fna.fbcdn.net/v/t51.2885-15/e35/97541152_159107825623635_5249339708604449442_n.jpg?_nc_ht=instagram.fblr2-1.fna.fbcdn.net&_nc_cat=1&_nc_ohc=GbpvzCskDmsAX-hN7aT&oh=fa26e71c1cb7a518c1bf4a60bb9a1800&oe=5EEB0FE4',
+//       gating_info: null,
+//       fact_check_overall_rating: null,
+//       fact_check_information: null,
+//       media_preview: 'ACoq2pLhEfa0gBHbFN+0oeko/wC+ayrsfv3+o/kKiDAcDk0h2Nv7Qn/PT9P/AK1H2lO8g/KsbcT7UD72PUUDsba3cQGGcE+uMVbrmWWukXoPpQhM566kX7Q65Gcjj8BUJXa/+9/P/PNQ6jaCW4cq3zZGR+A/KqB+0W/XJUfiP/rfpQBsHjk8D3/z+FMzyCO1UDdiddhGCSPpV0GgostXQL0H0rm4zlcDsa6RegoQmcxfKvnuSOQc56HoO4piFkA53A4GG68+hH9RXSSwxucsqknuQDTfIj/uL/3yP8KBHLi3V5htGw8kjHoPyPPcVcFuR3Brd8mPOdq/kKf5af3R+QpFo55Y2RuRwf8APNdMvQVGI19B+QqWmhSP/9k=',
+//       owner: [Object],
+//       is_video: false,
+//       accessibility_caption: "Photo by Memes.com on May 16, 2020. Image may contain: possible text that says 'Let's confuse the innocent'",
+//       edge_media_to_caption: [Object],
+//       edge_media_to_comment: [Object],
+//       comments_disabled: false,
+//       taken_at_timestamp: 1589650811,
+//       edge_liked_by: [Object],
+//       edge_media_preview_like: [Object],
+//       location: null,
+//       thumbnail_src: 'https://instagram.fblr2-1.fna.fbcdn.net/v/t51.2885-15/sh0.08/e35/s640x640/97541152_159107825623635_5249339708604449442_n.jpg?_nc_ht=instagram.fblr2-1.fna.fbcdn.net&_nc_cat=1&_nc_ohc=GbpvzCskDmsAX-hN7aT&oh=25ea6e9818cb4c84f7d11653fa987bd9&oe=5EE99E87',
+//       thumbnail_resources: [Array]
+//     }
+//   },
