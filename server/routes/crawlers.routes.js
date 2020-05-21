@@ -10,6 +10,8 @@ export default (router)=>{
     router.post('/latest-cursor', crawlersController.latestCursor);
     router.get('/latest-cursor', crawlersController.getLatestCursor);
 
+    router.get('/selected-pages-upload', crawlersController.selectedToUploadPosts);
+
 
     router.get('/compressed-images', crawlersController.compressImages);
 

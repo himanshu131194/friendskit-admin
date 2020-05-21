@@ -17,7 +17,7 @@ class List extends Component{
                         <th>ID</th>
                         <th>Source</th>
                         <th>Crawled Source</th>
-                        <th>Next Cursor</th>
+                        {/* <th>Next Cursor</th> */}
                         <th>URL</th>
                         <th>Laetst URL</th>
                         </tr>
@@ -31,7 +31,7 @@ class List extends Component{
                                         <th scope="row">{index+1}</th>
                                         <th>{cursor.source}</th>
                                         <td>{cursor.crawled_source > 1 ? '9gag' : 'fb'}</td>
-                                        <td>{cursor.next_cursor}</td>
+                                        {/* <td>{cursor.next_cursor}</td> */}
                                         <td><a target="_blank" href={cursor.url}>goto</a></td>
                                          <td>{latestUrl !== ''? <a target="_blank" href={latestUrl}>goto</a>: ''}</td>
                                     </tr>

@@ -38,6 +38,10 @@ const externalUrls = new mongoose.Schema({
       cursor_id:{
         type: String
       },
+      upload_selected: {
+        type: Boolean, 
+        default: DB.DEFAULT_TRUE
+      },
       section:{
         type:mongoose.Schema.ObjectId,
         ref: 'sections'

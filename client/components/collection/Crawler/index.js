@@ -5,11 +5,12 @@ import CONFIG from '../../../../config'
 
 import List from './List'
 import axios from 'axios'
+import { CostExplorer } from 'aws-sdk';
 
 class Header extends Component{
       
       state = {
-        listOfSelectedSources : []
+        listOfSelectedSources : {}
       }
       source_name= React.createRef();
       source_urls = React.createRef();
@@ -41,31 +42,50 @@ class Header extends Component{
         this.postButton.current.classList.remove('is-disabled');
       }
       
-      addNewPosts = async (e)=>{
-          const currentEle = e.target;
-          currentEle.classList.add('is-disabled');
-          
-          const baseUrl = `${CONFIG.API_URL}/api/post-crawled-urls`;
+      onUploadSelectedPages = async (e)=>{
+        const currentEle = e.target;
+        currentEle.classList.add('is-disabled');
+        
+        const baseUrl = `${CONFIG.API_URL}/api/selected-pages-upload`;
 
-          const url = this.state.listOfSelectedSources.length>0 ? `${baseUrl}?page=${JSON.stringify(this.state.listOfSelectedSources)}` : baseUrl;
-
-          const result = await axios.get(url);
-          if(result){
-            ++this.counter;
-            this.post_counter.current.innerHTML = this.counter;
-            if(this.keepPosting){
-                currentEle.click();
-                console.log('posted');
-                this.stopButton.current.classList.remove('is-disabled');
-            }else{
-                console.log('stopped');
-                this.keepPosting= true;
-                currentEle.classList.remove('is-disabled');
-                this.stopButton.current.classList.add('is-disabled');
-            }
-          }
+        const url = Object.keys(this.state.listOfSelectedSources).length>0 ? `${baseUrl}?page=${JSON.stringify(this.state.listOfSelectedSources)}` : baseUrl;
+        
+        console.log(url);
+        console.log(this.state.listOfSelectedSources);
+        const result = await axios.get(url);
+        console.log(result);
+        if(result){
+           currentEle.classList.remove('is-disabled');
+           this.props.listCrawledSources();
+        }
       }
+    //   addNewposts = async (e)=>{
+    //       const currentEle = e.target;
+    //       currentEle.classList.add('is-disabled');
+          
+    //       const baseUrl = `${CONFIG.API_URL}/api/selected-pages-upload`;
 
+    //       const url = this.state.listOfSelectedSources.length>0 ? `${baseUrl}?page=${JSON.stringify(this.state.listOfSelectedSources)}` : baseUrl;
+          
+    //       console.log(url);
+    //       console.log(this.state.listOfSelectedSources);
+    //       const result = await axios.get(url);
+    //       console.log(result);
+    //       if(result){
+    //         ++this.counter;
+    //         this.post_counter.current.innerHTML = this.counter;
+    //         if(this.keepPosting){
+    //             currentEle.click();
+    //             console.log('posted');
+    //             this.stopButton.current.classList.remove('is-disabled');
+    //         }else{
+    //             console.log('stopped');
+    //             this.keepPosting= true;
+    //             currentEle.classList.remove('is-disabled');
+    //             this.stopButton.current.classList.add('is-disabled');
+    //         }
+    //       }
+    //   }
       render(){
       	return(
           <Fragment>
@@ -77,19 +97,19 @@ class Header extends Component{
 
                             <div className="form-layout">
                                 <div className="row">
-                                <div className="col-lg-1">
+                                {/* <div className="col-lg-1">
                                      <h1 ref={this.post_counter}>0</h1>
-                                </div>
+                                </div> */}
                                 <div className="col-lg-3">
                                         <div className="form-group">
-                                            <button ref={this.postButton} className={this.state.listOfSelectedSources.length>0 ? "btn btn-primary btn-block uppercase mg-b-10" : "btn btn-primary btn-block uppercase mg-b-10 is-disabled"} onClick={this.addNewPosts}>Uplaod New Posts</button>
+                                            <button ref={this.postButton} className={Object.keys(this.state.listOfSelectedSources).length>0 ? "btn btn-primary btn-block uppercase mg-b-10" : "btn btn-primary btn-block uppercase mg-b-10 is-disabled"} onClick={this.onUploadSelectedPages}>select pages</button>
                                         </div>
                                 </div> 
-                                <div className="col-lg-2">
+                                {/* <div className="col-lg-2">
                                         <div className="form-group">
                                             <button ref={this.stopButton} className="btn btn-danger btn-block uppercase mg-b-10 is-disabled" onClick={this.stopKeepPosting}>stop</button>
                                         </div>
-                                </div> 
+                                </div>  */}
                                     {/* <div className="col-lg-4">
                                         <div className="form-group">
                                             <input className="form-control" ref={this.source_name} type="text" name="firstname" placeholder="Name" />

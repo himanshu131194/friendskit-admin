@@ -11,13 +11,20 @@ class List extends Component{
       }
       selectSource = (e)=>{
           let isSelected = e.target.checked,
-              sourceValue = e.target.dataset.source;
-          if(isSelected){
-              this.selectedSources[sourceValue] = sourceValue; 
-          }else{
-              delete this.selectedSources[sourceValue];
-          }
-          this.props.onListOfSelectedSource(Object.keys(this.selectedSources));
+              {source: sourceValue, uploaded} = e.target.dataset;
+              uploaded = uploaded=='false'? false : true;
+              if(isSelected){
+                this.selectedSources[sourceValue] = !uploaded;
+              }else{
+                delete this.selectedSources[sourceValue];
+              }
+        //   if(isSelected){
+             // this.selectedSources[sourceValue] = isSelected ? true : false ; 
+        //   }else{
+            //   this.selectedSources[sourceValue] = false; 
+        //   }
+          console.log(this.selectedSources)
+          this.props.onListOfSelectedSource(this.selectedSources);
       }
       render(){
       	return(
@@ -27,10 +34,11 @@ class List extends Component{
                     <thead>
                         <tr>
                         <th>
-                            <input type="checkbox" data-source='all' onClick={this.selectSource}/>
+                            {/* <input type="checkbox" data-source='all' onClick={this.selectSource}/> */}
                         </th>
                         <th>ID</th>
                         <th>Source</th>
+                        <th>Selected</th>
                         <th>Yes count</th>
                         <th>No count</th>
                         <th>Total Count</th>
@@ -42,10 +50,15 @@ class List extends Component{
                                 return(
                                     <tr key={source._id}>
                                         <th>
-                                            <input data-source={source._id} type="checkbox" onClick={this.selectSource}/>
+                                            <input data-source={source._id} data-uploaded={source.upload_selected} type="checkbox" onClick={this.selectSource}/>
                                         </th>
                                         <th scope="row">{index+1}</th>
                                         <th>{source._id}</th>
+                                        {
+                                           source.upload_selected
+                                           ? <th style={ { 'color': '#8bc34a' } }>{"TRUE"}</th>
+                                           : <th style={ { 'color': '#f44336' } }>{"FALSE"}</th>
+                                        }
                                         <td>{source.yesCount}</td>
                                         <td>{source.noCount}</td>
                                         <td>{source.totalCount}</td>

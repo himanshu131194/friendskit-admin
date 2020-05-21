@@ -212,6 +212,7 @@ export default {
                         'totalCount': {
                                 $sum : 1
                         },
+                        'upload_selected' : { "$first": "$upload_selected"}
                     }
                 }
            ]);
@@ -222,18 +223,61 @@ export default {
            res.status(400).send({
                error : e
            })
-         }
+         }  
+    },
+
+    selectedToUploadPosts : async (req, res)=>{
+        let selectedToOnly = JSON.parse(req.query.page);
+        let toRemove = [], toAdd = [];
+        for(let x in selectedToOnly){
+            selectedToOnly[x]? toAdd.push(x) : toRemove.push(x);
+        }
+
+        if(toRemove.length>0){
+            await externalUrls.updateMany({source : { $in : toRemove }},{
+                upload_selected: false
+            });
+        }
+        if(toAdd.length>0){
+            await externalUrls.updateMany({source : { $in : toAdd }},{
+                upload_selected: true
+            });
+        }
+        // for(x in req.query.page)
+        // if(req.query && req.query.page){
+        //     let listOfselected = JSON.parse(req.query.page);
+        //     selectedToOnly = listOfselected.indexOf('all')>=0 ? selectedToOnly :  {   
+        //         source : { $in : listOfselected } 
+        //     };
+        // }
+        console.log(req.query.page);
+        console.log(toRemove);
+
+        console.log(toAdd);
+
+        //MAKE ALL FALSE FIRST 
+        // await externalUrls.updateMany({     
+        // },{
+        //     upload_selected: false
+        // });
+        // const result = await externalUrls.updateMany(selectedToOnly,{
+        //     upload_selected: true
+        // });
+
+        res.send({
+            result:[]
+        })
     },
 
     listUploadedPosts : async (req, res)=>{
         console.log('lsit of ')
 
         //   //Count total posts 
-        // await externalUrls.updateMany({
+        const result = await externalUrls.updateMany({
              
-        // },{
-        //     post_uploaded: false
-        // });
+        },{
+            upload_selected: false
+        });
         // await latestCursor.deleteMany({}); 
         // const listOfPages = await externalUrls.aggregate([
         //     {
