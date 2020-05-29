@@ -11,6 +11,7 @@ import AddTags from './components/collection/AddTags';
 import Crawler from './components/collection/Crawler'
 import LatestCursor from './components/collection/LatestCursor'
 import NineGagCrawler from './components/collection/NineGagCrawler'
+import ListSourcePosts from './components/collection/ListSourcePosts'
 import InstagramCrawler from './components/collection/InstagramCrawler'
 
 
@@ -26,11 +27,14 @@ class MainRouter extends Component{
 					<Route path="/tags" component={AddTags}/>
 					<Route path="/upload-live" component={Crawler}/>
 					<Route path="/insta-crawler" component={InstagramCrawler}/>
+					<Route path="/9gag-crawler" component={NineGagCrawler}/>
 					<Route path="/latest-cursor" component={LatestCursor}/>
+					<Route path="/list-source-posts/:source" component={ListSourcePosts}/>
                </Switch>
              </Fragment>
 	  	  )
 	  }
 }
+
 
 export default MainRouter;

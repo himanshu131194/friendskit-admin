@@ -4,7 +4,6 @@ import passport from 'passport'
 import CONFIG from './../config'
 import bodyParser from 'body-parser'
 import Template from './../template.js'
-
 import usersRoutes from './routes/users.routes'
 import postsRoutes from './routes/posts.routes'
 import crawlersRoutes from './routes/crawlers.routes'
@@ -48,7 +47,6 @@ app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 app.use('/api', usersRoutes(express.Router()));
 app.use('/api', postsRoutes(express.Router()));
 app.use('/api', crawlersRoutes(express.Router()));
-
 
 
 app.get('*', (req, res)=>{

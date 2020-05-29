@@ -5,6 +5,7 @@ import Posts from '../models/posts.model'
 import likedPosts from '../models/liked_posts.model'
 import Comments from '../models/comments.model'
 import likedComments from '../models/liked_comments.model'
+import externalUrls from '../models/external.url.model'
 import mongoose from 'mongoose'
 import CONFIG from '../../config';
 import uuid from 'uuid/v4';
@@ -499,7 +500,28 @@ export default {
                error : e
            })
         }
-   }
+   },
+
+   listPostsOfCrawledPage : async (req, res) =>{
+        const { source_name: source , limit=8, offset=0 } = req.query; 
+        
+        console.log(req.query);
+        // console.log(li);
+
+        try {
+            const result = await externalUrls.find({source})
+                                            .skip(parseInt(offset))
+                                            .limit(parseInt(limit))
+                                            .sort({ created: -1 });
+            res.send({
+                data: result
+            })
+        } catch (error) {
+            return res.send({
+                error
+            })            
+        }        
+    } 
 
 }
 

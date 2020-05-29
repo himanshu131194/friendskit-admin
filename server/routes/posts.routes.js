@@ -41,6 +41,9 @@ export default (router)=>{
     router.post('/add-tags', postsController.addTags)
 
     router.post('/toggle-contents', postsController.toggleContents)
+
+    router.get('/page-contents', postsController.listPostsOfCrawledPage)
+
        
     return router;
 }

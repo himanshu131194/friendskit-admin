@@ -273,11 +273,11 @@ export default {
         console.log('lsit of ')
 
         //   //Count total posts 
-        const result = await externalUrls.updateMany({
+        // const result = await externalUrls.updateMany({
              
-        },{
-            upload_selected: false
-        });
+        // },{
+        //     upload_selected: false
+        // });
         // await latestCursor.deleteMany({}); 
         // const listOfPages = await externalUrls.aggregate([
         //     {
@@ -600,9 +600,6 @@ export default {
     },
     
     instagramCrawler : async (req, res)=>{
-
-
-
             const QUERY_HASH = '58b6785bea111c67129decbe6a448951';
             const transformPosts = (posts = []) => posts.map(({node}) => ({
                 ...node,
@@ -645,7 +642,7 @@ export default {
             return res.send({
                 data : transformPosts(currentPosts)
             })
-    } 
+    }
 }
 
 

@@ -13135,7 +13135,7 @@ textarea.parsley-success:focus {
  * Licensed under ThemeFores License
  */
 .br-header {
-  height: 60px;
+  height: 40px;
   position: fixed;
   top: 0;
   right: 0;
@@ -13372,7 +13372,7 @@ textarea.parsley-success:focus {
   top: 0;
   left: -230px;
   width: 230px;
-  height: 60px;
+  height: 40px;
   background-color: #fff;
   font-size: 24px;
   font-weight: 700;
@@ -13800,7 +13800,7 @@ textarea.parsley-success:focus {
 
 .br-mainpanel {
   margin-left: 0;
-  margin-top: 60px;
+  margin-top: 45px;
   transition: all 0.2s ease-in-out;
 }
 @media (min-width: 992px) {
@@ -13846,13 +13846,13 @@ textarea.parsley-success:focus {
 }
 @media (min-width: 576px) {
   .br-section-wrapper {
-    padding: 30px;
+    padding: 20px;
     border-radius: 3px;
   }
 }
 @media (min-width: 992px) {
   .br-section-wrapper {
-    padding: 30px;
+    padding: 20px;
   }
 }
 
@@ -14037,7 +14037,7 @@ textarea.parsley-success:focus {
 .br-subleft {
   position: fixed;
   left: 0;
-  top: 60px;
+  top: 40px;
   bottom: 0;
   width: 230px;
   padding: 10px;

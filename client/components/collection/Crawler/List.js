@@ -53,7 +53,7 @@ class List extends Component{
                                             <input data-source={source._id} data-uploaded={source.upload_selected} type="checkbox" onClick={this.selectSource}/>
                                         </th>
                                         <th scope="row">{index+1}</th>
-                                        <th>{source._id}</th>
+                                        <th><a href={`/list-source-posts/${source._id}`}>{source._id}</a></th>
                                         {
                                            source.upload_selected
                                            ? <th style={ { 'color': '#8bc34a' } }>{"TRUE"}</th>
