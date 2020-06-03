@@ -42,6 +42,8 @@ export default (router)=>{
 
     router.post('/toggle-contents', postsController.toggleContents)
 
+    router.post('/create-article', postsController.createPostArticle)    
+
     router.get('/page-contents', postsController.listPostsOfCrawledPage)
 
        

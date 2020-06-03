@@ -274,9 +274,9 @@ export default {
 
         //   //Count total posts 
         // const result = await externalUrls.updateMany({
-             
+        //      source : 'insta_krabical'
         // },{
-        //     upload_selected: false
+        //     title: ''
         // });
         // await latestCursor.deleteMany({}); 
         // const listOfPages = await externalUrls.aggregate([

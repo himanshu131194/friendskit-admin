@@ -30,6 +30,8 @@ class List extends Component{
       	return(
           <Fragment>
                 <div className="bd bd-gray-300 rounded table-responsive mg-t-10">
+                    {/* https://www.facebook.com/dialog/share&app_id={APP_ID}&display=popup&href={LINK_TO_SHARE}&redirect_uri={REDIRECT_AFTER_SHARE} */}
+                    <a href="https://www.facebook.com/dialog/share?app_id=426940641303361&display=popup&href=https://feelfunny.app/fbshare-article/5ed3f1501374a166a06e306f&redirect_uri=https://feelfunny.app" target="_blank">Goto Logo</a>
                     <table className="table mg-b-0">
                     <thead>
                         <tr>
@@ -48,7 +50,7 @@ class List extends Component{
                                     <tr key={section._id}>
                                         <th scope="row">{index+1}</th>
                                         <td>{section._id}</td>
-                                        <td>{section.value}</td>
+                                        <td><a href={`/list-source-posts/${section._id}`} target="_blank">{section.value}</a></td>
                                         <td><a href={section.url} target="_blank">Goto Logo</a></td>
                                         <td>{section.description}</td>
                                         <td className="custom-switch">

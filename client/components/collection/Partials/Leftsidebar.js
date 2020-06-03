@@ -51,6 +51,12 @@ class Leftsidebar extends Component{
                                 </div>
                             </a>
 
+                            <a href="/article" className="br-menu-link">
+                                <div className="br-menu-item">
+                                    <i className="menu-item-icon icon ion-ios-filing-outline tx-24"></i>
+                                    <span className="menu-item-label">INSTA CRAWLER</span>
+                                </div>
+                            </a>
 
                             {/* <ul className="br-menu-sub nav flex-column">
                                 <li className="nav-item"><a href="accordion.html" className="nav-link">Accordion</a></li>

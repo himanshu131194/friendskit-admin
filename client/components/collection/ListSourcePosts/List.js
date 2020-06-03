@@ -14,7 +14,8 @@ class List extends Component{
                             <div className="card-body bd bd-b-0 bd-color-gray-lighter rounded-top">
                                 <h6 className="mg-b-3"><a href="cards.html" className="tx-dark">{post.title}</a></h6>
                             </div>
-                            <img className="card-img-bottom img-fluid" src={post.s3_url} alt="Image"/>
+                            <img className="card-img-bottom img-fluid" src={post.url} alt="Image"/>
+                            <h3>{post._id}</h3>
                         </div>
                     </div>
                 )) }
@@ -24,21 +25,32 @@ class List extends Component{
       }
 }
 
-// crawled_source: 1
-// created: "2020-04-27T06:50:47.069Z"
-// ext: "jpg"
-// mime_type: "image/jpg"
-// next_cursor: null
-// post_uploaded: true
-// s3_url: "https://stylemycv.s3.ap-south-1.amazonaws.com/uploads/27-04-2020/be17d0d0-b157-4ba2-9fa1-409f81cef722.jpg"
-// section: "5e7f3da743e92bf4f795db45"
-// slug_id: "be17d0d0-b157-4ba2-9fa1-409f81cef722"
-// source: "neyoyohoho"
-// title: "LIFE. lol"
-// upload_selected: false
-// url: "https://www.facebook.com/Neyoyohoho/photos/a.399773226779563/577189389037945/?type=3&theater"
-// __v: 0
-// _id: "5ea680c7b1cf718603420c24"
+// id
+// :
+// 5ed2ce11f53463752b90bb8d
+// article_posts
+// :
+// article_title
+// :
+// "Ten Random Memes For People Tired Of Everything"
+// article_sitename
+// :
+// "feelfunny"
+// article_url
+// :
+// "https://feelfunny.app/article"
+// article_description
+// :
+// "You get memes, everyone gets memes!"
+// article_cover
+// :
+// Object
+// created
+// :
+// 2020-05-30T21:20:17.204+00:00
+// __v
+// :
+// 0
 
 export default connect(state=>state, actions)(List);
 

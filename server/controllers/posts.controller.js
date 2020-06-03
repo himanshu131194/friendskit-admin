@@ -6,6 +6,7 @@ import likedPosts from '../models/liked_posts.model'
 import Comments from '../models/comments.model'
 import likedComments from '../models/liked_comments.model'
 import externalUrls from '../models/external.url.model'
+import Articles from '../models/articals.model'
 import mongoose from 'mongoose'
 import CONFIG from '../../config';
 import uuid from 'uuid/v4';
@@ -509,7 +510,7 @@ export default {
         // console.log(li);
 
         try {
-            const result = await externalUrls.find({source})
+            const result = await Posts.find({section: mongoose.Types.ObjectId(source)})
                                             .skip(parseInt(offset))
                                             .limit(parseInt(limit))
                                             .sort({ created: -1 });
@@ -521,13 +522,70 @@ export default {
                 error
             })            
         }        
-    } 
+    },
+
+    createPostArticle : async (req, res)=>{
+        const { ogTitle, ogSitename, ogUrl, ogDescription, ogImage, ogHeight, ogWidth, ogPosts } = req.body;
+        const article_cover = {
+            url: ogImage.trim(),
+            width: ogWidth.trim(),
+            height: ogHeight.trim()
+        }
+        let a = [];
+        for(let x of ogPosts.split(',')){
+            a.push(x.trim())
+        }
+        if(ogTitle!==''){
+           const article = new Articles({
+            article_title: ogTitle.trim(),
+            article_sitename: ogSitename.trim(),
+            article_url: ogUrl.trim(),
+            article_description: ogDescription.trim(),
+            article_cover: article_cover,
+            article_posts : a
+           });
+           const result = await article.save();
+           console.log(result);
+
+           //UPDATE NEW ID 
+           const updatedArticle = await Articles.findOneAndUpdate({
+            _id: result._id
+           }, 
+           { article_url: `${result.article_url}/${result._id}` });
+           return res.send({
+               data : updatedArticle
+           })
+        }
+    }
 
 }
 
-
-
-
+// {
+//     article_cover: {
+//       url: 'https://stylemycv.s3.ap-south-1.amazonaws.com/uploads/31-05-2020/5ce05174-177c-4877-a300-9a27f682906f.jpg',
+//       width: '800',
+//       height: '200'
+//     },
+//     article_posts: [
+//       '5ed3b5181296d5545fb08ea3',
+//       '5ed3b0681296d5545fb08e9c',
+//       '5ed39c401296d5545fb08e7e',
+//       '5ed36a181296d5545fb08e2f',
+//       '5ed3b6081296d5545fb08ea5',
+//       '5ed3a8701296d5545fb08e8e',
+//       '5ed358c01296d5545fb08e13',
+//       '5ed355f032d0c9d2ce57f019',
+//       '5ed345101296d5545fb08ded',
+//       '5ed31bd01296d5545fb08da4'
+//     ],
+//     _id: 5ed3e9cd3b58cb3996df6305,
+//     article_title: 'Ten Random Memes For People Tired Of Everything',
+//     article_sitename: 'feelfunny',
+//     article_url: 'https://feelfunny.app/article',
+//     article_description: 'You get memes, everyone gets memes!',
+//     created: 2020-05-31T17:30:53.887Z,
+//     __v: 0
+//   }
 
 
 
