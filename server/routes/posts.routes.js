@@ -46,6 +46,11 @@ export default (router)=>{
 
     router.get('/page-contents', postsController.listPostsOfCrawledPage)
 
-       
+    router.get('/list-articles', postsController.listArticles);
+
+    router.post('/update-articles', postsController.updateArticle);
+
+
     return router;
+
 }

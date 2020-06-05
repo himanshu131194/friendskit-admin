@@ -92,6 +92,9 @@ const Posts = new mongoose.Schema({
       crawled_source:{
          type: String
       },
+      crawled_source_name:{
+         type: String
+      },
       crawled_source_url:{
          type: String
       },
@@ -108,3 +111,4 @@ const Posts = new mongoose.Schema({
 })
 
 export default mongoose.model('posts', Posts);
+

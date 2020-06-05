@@ -390,6 +390,7 @@ html [type="button"],
 [type="reset"],
 [type="submit"] {
   -webkit-appearance: button;
+  cursor: pointer;
 }
 
 button::-moz-focus-inner,

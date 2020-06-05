@@ -21,6 +21,7 @@ export default () => {
 
         <!-- Bracket CSS -->
         <link rel="stylesheet" href="/css/bracket.css">
+        <link rel="stylesheet" href="/css/spinkit.css">
       </head>
         <body>
                 <div id="root"></div>

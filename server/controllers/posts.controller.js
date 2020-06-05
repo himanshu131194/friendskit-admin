@@ -556,7 +556,44 @@ export default {
                data : updatedArticle
            })
         }
+    },
+
+    updateArticle:  async (req, res)=>{
+        const { id, url } = req.body;
+        try {
+            const updatedArticle = await Articles.findOneAndUpdate({
+                _id: id
+            }, 
+            { article_cover: {
+                url: url.trim(),
+                width: 800,
+                height: 200
+            } 
+            }, {new: true});
+            return res.send({
+                data : updatedArticle
+            })
+        } catch (error) {
+            return res.send({
+                error
+            })    
+        }
+    },
+
+    listArticles: async (req, res)=>{
+        try {
+            const result = await Articles.find({});
+            console.log(result);
+            return res.send({
+                data: result
+            })
+        }catch(error) {
+            return res.send({
+                error
+            })
+        }
     }
+    
 
 }
 

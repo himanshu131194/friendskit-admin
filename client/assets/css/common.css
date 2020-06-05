@@ -319,3 +319,25 @@ bg-1a72ff{
     /* max-height: 450px; */
     overflow-y: auto;
 }
+
+
+.sk-spinner-pulse-small{
+    width: 20px;
+    height: 20px;
+    margin: unset !important;
+}
+
+
+.article-post-list{
+    max-height: 500px;
+    overflow-y: scroll;
+}
+.article-posts-box{
+   max-height: 200px;
+   /* box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.21); */
+   overflow-y: scroll;
+}
+
+.article-posts{
+    width: 100%;
+}

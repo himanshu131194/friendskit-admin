@@ -14,7 +14,7 @@ import NineGagCrawler from './components/collection/NineGagCrawler'
 import ListSourcePosts from './components/collection/ListSourcePosts'
 import InstagramCrawler from './components/collection/InstagramCrawler'
 import Article from './components/collection/Article'
-
+import ArticlesList from './components/collection/Article/List'
 
 class MainRouter extends Component{
 	  render(){
@@ -32,6 +32,7 @@ class MainRouter extends Component{
 					<Route path="/latest-cursor" component={LatestCursor}/>
 					<Route path="/list-source-posts/:source" component={ListSourcePosts}/>
 					<Route path="/article" component={Article}/>
+					<Route path="/list-article" component={ArticlesList}/>
                </Switch>
              </Fragment>
 	  	  )
